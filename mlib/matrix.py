@@ -8,15 +8,15 @@ class Matrix:
 
     def dimension(self, matrix) -> {}:
         """
-         :param matrix:
-         :return: a list with index 0 as the row dimension (m) and index 1 as the column dimension
+         :param matrix: represented as a nested list
+         :return: a dictionary that contains the keys 'row_size' and 'column_size'
       """
         row_size = len(matrix)
         column_size = len(matrix[0])
 
         # make sure each row has the same number of columns
-        for i in matrix:
-            if len(i) != column_size:
+        for rows in matrix:
+            if len(rows) != column_size:
                 raise Exception('Error! Column sizes do not match')
 
         return {'row_size': row_size, 'column_size': column_size}
