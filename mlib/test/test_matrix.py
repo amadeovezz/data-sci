@@ -22,10 +22,26 @@ class TestMatrix:
     ]
 
 
+    def test_transpose_row_vector_to_column(self):
+        m = matrix.Matrix(self.column_vector)
+        n = m.transpose()
+        assert n.is_row_vector is True
+        assert n.matrix[0][0] == 1
+        assert n.matrix[0][1] == 2
+        assert n.matrix[0][2] == 3
+
+
+    def test_transpose_column_vector_to_row(self):
+        m = matrix.Matrix(self.row_vector)
+        n = m.transpose()
+        assert n.is_column_vector is True
+        assert n.matrix[0][0] == 1
+        assert n.matrix[1][0] == 2
+        assert n.matrix[2][0] == 3
+
     def test_malformed_matrix(self):
         with pytest.raises(Exception):
             matrix.Matrix(self.malformed_matrix)
-
 
     def test_column_vector_dimension(self):
         m = matrix.Matrix(self.column_vector)
