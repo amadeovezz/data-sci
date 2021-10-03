@@ -1,5 +1,6 @@
 from typing import List
 
+
 class Matrix:
 
     def __init__(self, matrix):
@@ -17,14 +18,10 @@ class Matrix:
             raise Exception('Matrix must be a column or row vector to transpose...')
 
         if self.is_column_vector:
-            new_matrix = [[row[0] for row in self.matrix]]
-            return Matrix(new_matrix)
+            return self._new_row_vector(self.vector)
 
         elif self.is_row_vector:
-            new_matrix = []
-            for column in self.matrix[0]:
-                new_matrix.append([column])
-            return Matrix(new_matrix)
+            return self._new_column_vector(self.vector)
 
         else:
             raise Exception('Can only transpose 1xN matrix or Nx1 ')
@@ -74,6 +71,29 @@ class Matrix:
     def _new_row_vector(r_vector: List):
         new_matrix = [[row for row in r_vector]]
         return Matrix(new_matrix)
+
+    def __add__(self, other):
+        if self.is_column_vector:
+            if other.is_column_vector:
+                new_vector = []
+                for (a, b) in zip(self.vector, other):
+                    new_vector.append(a + b)
+                return self._new_vector(new_vector)
+            elif other.is_row_vector:
+                return Exception('Vector shapes are incompatible... Please use transpose()...')
+            else:
+                return Exception('Vector and matrix shapes are incompatible...')
+
+        elif self.is_row_vector:
+            if other.is_row_vector:
+                new_vector = []
+                for (a, b) in zip(self.vector, other):
+                    new_vector.append(a + b)
+                return self._new_vector(new_vector)
+            elif other.is_column_vector:
+                return Exception('Vector shapes are incompatible... Please use transpose()...')
+            else:
+                return Exception('Vector and matrix shapes are incompatible...')
 
     def __rmul__(self, other):
         if self.is_column_vector or self.is_row_vector:
@@ -126,7 +146,3 @@ class Matrix:
         elif self.is_row_vector:
             for column in self.matrix[0]:
                 yield column
-
-
-
-
