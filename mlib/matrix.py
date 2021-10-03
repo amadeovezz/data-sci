@@ -26,7 +26,6 @@ class Matrix:
         else:
             raise Exception('Can only transpose 1xN matrix or Nx1 ')
 
-
     def dimension(self, matrix) -> {}:
         """
          :param matrix: represented as a nested list
@@ -42,7 +41,6 @@ class Matrix:
 
         return {'row_size': row_size, 'column_size': column_size}
 
-
     def _get_vector(self) -> List:
         '''
         when matrix dimension is 1xN or Nx1, aka a (vector) then just use a list as representation, since it is
@@ -52,7 +50,6 @@ class Matrix:
             return [row[0] for row in self.matrix]
         elif self.is_row_vector:
             return [column for column in self.matrix[0]]
-
 
     def _new_vector(self, vector: List):
         if self.is_column_vector:
@@ -97,7 +94,7 @@ class Matrix:
 
     def __rmul__(self, other):
         if self.is_column_vector or self.is_row_vector:
-            new_vector = [element*other for element in self.vector]
+            new_vector = [element * other for element in self.vector]
             return self._new_vector(new_vector)
 
     def __repr__(self) -> str:
