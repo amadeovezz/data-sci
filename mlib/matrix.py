@@ -1,5 +1,6 @@
-from typing import List
 
+import math
+from typing import List
 
 class Matrix:
 
@@ -9,6 +10,7 @@ class Matrix:
         self.is_column_vector = True if self.dim['column_size'] == 1 else False
         self.is_row_vector = True if self.dim['row_size'] == 1 else False
         self.vector = self._get_vector() if self.is_column_vector or self.is_row_vector else None
+        self.vector_length = self.vector_length() if self.vector is not None else None
 
     def transpose(self):
         """
@@ -40,6 +42,12 @@ class Matrix:
                 raise Exception('Error! Column sizes do not match...')
 
         return {'row_size': row_size, 'column_size': column_size}
+
+    def vector_length(self) -> float:
+        sum = 0
+        for element in self.vector:
+            sum += math.sqrt(element**2)
+        return sum
 
     def _get_vector(self) -> List:
         '''
@@ -143,3 +151,15 @@ class Matrix:
         elif self.is_row_vector:
             for column in self.matrix[0]:
                 yield column
+
+def dot(m: Matrix, n: Matrix) -> int:
+    if m.vector is None and n.vector is None:
+        raise Exception('m and n are not vectors...')
+
+    if m.is_column_vector:
+        m = m.transpose()
+
+    sum = 0
+    for scalar, element in zip(m, n):
+        sum += scalar * element
+    return sum
