@@ -1,3 +1,5 @@
+from typing import List
+
 class Matrix:
 
     def __init__(self, matrix):
@@ -5,7 +7,7 @@ class Matrix:
         self.dim = self.dimension(matrix)
         self.is_column_vector = True if self.dim['column_size'] == 1 else False
         self.is_row_vector = True if self.dim['row_size'] == 1 else False
-
+        self.vector = self._get_vector() if self.is_column_vector or self.is_row_vector else None
 
     def transpose(self):
         """
@@ -27,6 +29,7 @@ class Matrix:
         else:
             raise Exception('Can only transpose 1xN matrix or Nx1 ')
 
+
     def dimension(self, matrix) -> {}:
         """
          :param matrix: represented as a nested list
@@ -41,6 +44,41 @@ class Matrix:
                 raise Exception('Error! Column sizes do not match...')
 
         return {'row_size': row_size, 'column_size': column_size}
+
+
+    def _get_vector(self) -> List:
+        '''
+        when matrix dimension is 1xN or Nx1, aka a (vector) then just use a list as representation, since it is
+        easier to work with.
+        '''
+        if self.is_column_vector:
+            return [row[0] for row in self.matrix]
+        elif self.is_row_vector:
+            return [column for column in self.matrix[0]]
+
+
+    def _new_vector(self, vector: List):
+        if self.is_column_vector:
+            return self._new_column_vector(vector)
+        elif self.is_row_vector:
+            return self._new_row_vector(vector)
+
+    @staticmethod
+    def _new_column_vector(c_vector: List):
+        new_matrix = []
+        for column in c_vector:
+            new_matrix.append([column])
+        return Matrix(new_matrix)
+
+    @staticmethod
+    def _new_row_vector(r_vector: List):
+        new_matrix = [[row for row in r_vector]]
+        return Matrix(new_matrix)
+
+    def __rmul__(self, other):
+        if self.is_column_vector or self.is_row_vector:
+            new_vector = [element*other for element in self.vector]
+            return self._new_vector(new_vector)
 
     def __repr__(self) -> str:
         if self.is_column_vector:
@@ -75,3 +113,20 @@ class Matrix:
                 matrix_str += "{}".format('\n')
         matrix_str += "]"
         return matrix_str
+
+    def __iter__(self):
+        '''
+        Abstract away the nested list here for column and row vectors
+        :return:
+        '''
+        if self.is_column_vector:
+            for row in self.matrix:
+                yield row[0]
+
+        elif self.is_row_vector:
+            for column in self.matrix[0]:
+                yield column
+
+
+
+

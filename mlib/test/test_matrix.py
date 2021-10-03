@@ -21,6 +21,29 @@ class TestMatrix:
         , [1,2]
     ]
 
+    def test_column_vector_scaling(self):
+        m = matrix.Matrix(self.column_vector)
+        n = 3 * m
+        assert n.matrix[0][0] == 3
+        assert n.matrix[1][0] == 6
+        assert n.matrix[2][0] == 9
+
+    def test_row_vector_scaling(self):
+        m = matrix.Matrix(self.row_vector)
+        n = 3 * m
+        assert n.matrix[0][0] == 3
+        assert n.matrix[0][1] == 6
+        assert n.matrix[0][2] == 9
+
+    def test_row_vector_iteration(self):
+        m = matrix.Matrix(self.row_vector)
+        for element in m:
+            assert type(element) == int
+
+    def test_column_vector_iteration(self):
+        m = matrix.Matrix(self.column_vector)
+        for element in m:
+            assert type(element) == int
 
     def test_transpose_row_vector_to_column(self):
         m = matrix.Matrix(self.column_vector)
