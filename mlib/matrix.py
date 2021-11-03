@@ -1,16 +1,17 @@
 
+import logging
 import math
-from typing import List
+from typing import List, Dict
 
 class Matrix:
 
     def __init__(self, matrix):
         self.matrix = matrix
-        self.dim = self.dimension(matrix)
+        self.dim = self._dimension()
         self.is_column_vector = True if self.dim['column_size'] == 1 else False
         self.is_row_vector = True if self.dim['row_size'] == 1 else False
         self.vector = self._get_vector() if self.is_column_vector or self.is_row_vector else None
-        self.vector_length = self.vector_length() if self.vector is not None else None
+        self.vector_length = self._vector_length() if self.vector is not None else None
 
     def transpose(self):
         """
@@ -28,32 +29,33 @@ class Matrix:
         else:
             raise Exception('Can only transpose 1xN matrix or Nx1 ')
 
-    def dimension(self, matrix) -> {}:
+    def _dimension(self) -> Dict:
         """
          :param matrix: represented as a nested list
          :return: a dictionary that contains the keys 'row_size' and 'column_size'
         """
-        row_size = len(matrix)
-        column_size = len(matrix[0])
+        row_size = len(self.matrix)
+        column_size = len(self.matrix[0])
 
         # make sure each row has the same number of columns
-        for rows in matrix:
+        for rows in self.matrix:
             if len(rows) != column_size:
                 raise Exception('Error! Column sizes do not match...')
 
         return {'row_size': row_size, 'column_size': column_size}
 
-    def vector_length(self) -> float:
-        sum = 0
+    def _vector_length(self) -> float:
+        # TODO: add tests for this
+        total_sum = 0
         for element in self.vector:
-            sum += math.sqrt(element**2)
-        return sum
+            total_sum += math.sqrt(element**2)
+        return total_sum
 
     def _get_vector(self) -> List:
-        '''
+        """
         when matrix dimension is 1xN or Nx1, aka a (vector) then just use a list as representation, since it is
         easier to work with.
-        '''
+        """
         if self.is_column_vector:
             return [row[0] for row in self.matrix]
         elif self.is_row_vector:
@@ -78,6 +80,7 @@ class Matrix:
         return Matrix(new_matrix)
 
     def __add__(self, other):
+        # TODO: refactor this, add tests
         if self.is_column_vector:
             if other.is_column_vector:
                 new_vector = []
@@ -99,6 +102,30 @@ class Matrix:
                 return Exception('Vector shapes are incompatible... Please use transpose()...')
             else:
                 return Exception('Vector and matrix shapes are incompatible...')
+
+    def __sub__(self, other):
+        # TODO: refactor to avoid duplicate code, add tests
+        if self.is_column_vector:
+            if other.is_column_vector:
+                new_vector = []
+                for (a, b) in zip(self.vector, other):
+                    new_vector.append(a - b)
+                return self._new_vector(new_vector)
+            elif other.is_row_vector:
+                return Exception('Vector shapes are incompatible... Please use transpose()...')
+            else:
+                return Exception('Vector and matrix shapes are incompatible...')
+
+        elif self.is_row_vector:
+            if other.is_row_vector:
+                new_vector = []
+                for (a, b) in zip(self.vector, other):
+                    new_vector.append(a - b)
+                return self._new_vector(new_vector)
+        elif other.is_column_vector:
+            return Exception('Vector shapes are incompatible... Please use transpose()...')
+        else:
+            return Exception('Vector and matrix shapes are incompatible...')
 
     def __rmul__(self, other):
         if self.is_column_vector or self.is_row_vector:
@@ -140,10 +167,10 @@ class Matrix:
         return matrix_str
 
     def __iter__(self):
-        '''
+        """
         Abstract away the nested list here for column and row vectors
         :return:
-        '''
+        """
         if self.is_column_vector:
             for row in self.matrix:
                 yield row[0]
@@ -152,14 +179,29 @@ class Matrix:
             for column in self.matrix[0]:
                 yield column
 
+
 def dot(m: Matrix, n: Matrix) -> int:
+    """
+    :param m: a row or column vector
+    :param n: n must be a column vector
+    :return: the dot product
+    """
+
+    if not n.is_column_vector:
+        raise Exception('n is not a column vector...')
+
     if m.vector is None and n.vector is None:
         raise Exception('m and n are not vectors...')
 
     if m.is_column_vector:
+        logging.info('m is a column vector, transposing...')
         m = m.transpose()
 
     sum = 0
     for scalar, element in zip(m, n):
         sum += scalar * element
     return sum
+
+
+
+
