@@ -3,6 +3,7 @@ import logging
 import math
 from typing import List, Dict
 
+
 class Matrix:
 
     def __init__(self, matrix):
@@ -12,7 +13,6 @@ class Matrix:
         self.is_row_vector = True if self.dim['row_size'] == 1 else False
         self.is_matrix = True if not self.is_column_vector and not self.is_row_vector else False
         self.vector = self._get_vector() if self.is_column_vector or self.is_row_vector else None
-        self.vector_length = self._vector_length() if self.vector is not None else None
 
     def transpose(self):
         """
@@ -30,6 +30,18 @@ class Matrix:
         else:
             raise Exception('Can only transpose 1xN matrix or Nx1 ')
 
+    @property
+    def length(self) -> float:
+        # TODO: add tests for this
+        if self.is_matrix:
+            logging.error('Can only compute length for vectors...')
+            return None
+
+        total_sum = 0
+        for element in self.vector:
+            total_sum += math.sqrt(element**2)
+        return total_sum
+
     def _dimension(self) -> Dict:
         """
          :param matrix: represented as a nested list
@@ -44,13 +56,6 @@ class Matrix:
                 raise Exception('Error! Column sizes do not match...')
 
         return {'row_size': row_size, 'column_size': column_size}
-
-    def _vector_length(self) -> float:
-        # TODO: add tests for this
-        total_sum = 0
-        for element in self.vector:
-            total_sum += math.sqrt(element**2)
-        return total_sum
 
     def _get_vector(self) -> List:
         """
@@ -214,6 +219,23 @@ class Matrix:
         elif self.is_row_vector:
             for column in self.matrix[0]:
                 yield column
+
+
+def build_identity_matrix(dim: int) -> [[]]:
+    """
+    :param dim: size of matrix -> dim x dim -> ie: 2 = 2 x 2. Minimum dimension is 2
+    :return: identity matrix
+    """
+    if dim < 2:
+        raise Exception('Dimension must be >= 2')
+
+    # Create matrix with 0's
+    identity = [[0] * dim for i in range(0, dim)]
+
+    # Assign 1 to proper indexes
+    for i, row in enumerate(identity):
+        row[i] = 1
+    return Matrix(identity)
 
 
 def dot(v: Matrix, u: Matrix) -> int:

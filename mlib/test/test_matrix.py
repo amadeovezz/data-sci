@@ -38,12 +38,10 @@ class TestMatrix:
         [1, 0],
     ]
 
-
     malformed_matrix = [
         [1,2,3]
         , [1,2]
     ]
-
 
     def test_vector_matrix_multiplication(self):
         A = matrix.Matrix(self.reflection_matrix)
@@ -56,6 +54,13 @@ class TestMatrix:
     def test_is_matrix(self):
         m = matrix.Matrix(self.reflection_matrix)
         assert m.is_matrix is True
+
+    def test_build_identity_matrix(self):
+        I = matrix.build_identity_matrix(2)
+        I.matrix[0][0] = 1
+        I.matrix[0][1] = 0
+        I.matrix[1][0] = 0
+        I.matrix[0][1] = 1
 
     def test_linear_combination(self):
         v = matrix.Matrix(self.column_vector)
