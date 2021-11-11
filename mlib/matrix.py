@@ -10,6 +10,7 @@ class Matrix:
         self.dim = self._dimension()
         self.is_column_vector = True if self.dim['column_size'] == 1 else False
         self.is_row_vector = True if self.dim['row_size'] == 1 else False
+        self.is_matrix = True if not self.is_column_vector and not self.is_row_vector else False
         self.vector = self._get_vector() if self.is_column_vector or self.is_row_vector else None
         self.vector_length = self._vector_length() if self.vector is not None else None
 
@@ -127,6 +128,41 @@ class Matrix:
         else:
             return Exception('Vector and matrix shapes are incompatible...')
 
+    def __mul__(self, other):
+        # Vector matrix multiplication
+        # Ex:
+        """
+        Ie:
+        m = [
+                [a_00, a_01, ..., a_0_n-1],
+                [a_10, a_11, ..., a_1_n-1],
+                ...
+                [a_m-10, a_m-11, ..., a_m-1n-1],
+            ]
+        v = [
+                [xo],
+                [x1],
+                ...
+                [xi]
+            ]
+
+        m * v =
+        x0 * m[0][0] + x1 * m[0][1] +  ... +
+        x0 * m[1][0] + x1 * m[1][1] +  ... +
+        ...
+        x_i * m[i][0] + x1 * m[i][1] +  ... +
+
+        """
+        if self.is_matrix and other.is_column_vector:
+            assert self.dim['column_size'] == other.dim['row_size']
+            new_vector = []
+            for i, rows in enumerate(self.matrix):
+                total_sum = 0
+                for column, scalar in zip(rows, other.vector):
+                    total_sum += scalar * column
+                new_vector.append(total_sum)
+            return self._new_column_vector(new_vector)
+
     def __rmul__(self, other):
         if self.is_column_vector or self.is_row_vector:
             new_vector = [element * other for element in self.vector]
@@ -168,7 +204,7 @@ class Matrix:
 
     def __iter__(self):
         """
-        Abstract away the nested list here for column and row vectors
+        Abstract away the nested list here for column and row vectors.
         :return:
         """
         if self.is_column_vector:
@@ -180,28 +216,25 @@ class Matrix:
                 yield column
 
 
-def dot(m: Matrix, n: Matrix) -> int:
+def dot(v: Matrix, u: Matrix) -> int:
     """
-    :param m: a row or column vector
-    :param n: n must be a column vector
+    :param v: a row or column vector
+    :param u: n must be a column vector
     :return: the dot product
     """
 
-    if not n.is_column_vector:
+    if not u.is_column_vector:
         raise Exception('n is not a column vector...')
 
-    if m.vector is None and n.vector is None:
+    if v.vector is None and u.vector is None:
         raise Exception('m and n are not vectors...')
 
-    if m.is_column_vector:
+    if v.is_column_vector:
         logging.info('m is a column vector, transposing...')
-        m = m.transpose()
+        v = v.transpose()
 
-    sum = 0
-    for scalar, element in zip(m, n):
-        sum += scalar * element
-    return sum
-
-
-
+    total_sum = 0
+    for v_element, u_element in zip(v, u):
+        total_sum += v_element * u_element
+    return total_sum
 
