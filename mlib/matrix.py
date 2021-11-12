@@ -1,7 +1,8 @@
-
 import logging
 import math
+
 from typing import List, Dict
+from functools import reduce
 
 
 class Matrix:
@@ -43,7 +44,7 @@ class Matrix:
 
         total_sum = 0
         for element in self.vector_as_list:
-            total_sum += math.sqrt(element**2)
+            total_sum += math.sqrt(element ** 2)
         return total_sum
 
     @property
@@ -233,7 +234,7 @@ def new_column_vector(c_vector: List):
     return Matrix(new_matrix)
 
 
-def build_identity_matrix(dim: int) -> Matrix:
+def new_identity_matrix(dim: int) -> Matrix:
     """
     :param dim: size of matrix -> dim x dim -> ie: 2 = 2 x 2. Minimum dimension is 2
     :return: identity matrix
@@ -248,6 +249,49 @@ def build_identity_matrix(dim: int) -> Matrix:
     for i, row in enumerate(identity):
         row[i] = 1
     return Matrix(identity)
+
+
+def new_unit_basis_vector(dim: int, unit_index: int) -> Matrix:
+    """
+    :param dim: size of the basis vector.
+    :param unit_index: commonly seen as e_i. The index we assign our unit value 1. Index begins at 0.
+    :return: unit basis column vectors
+    """
+
+    if unit_index >= dim:
+        raise Exception(f"unit index must be less than dim. Vectors are indexed at 1... ")
+
+    unit_basis_vector = [0] * dim
+    unit_basis_vector[unit_index] = 1
+    return new_column_vector(unit_basis_vector)
+
+
+def matrix_from_vector_func(func) -> Matrix:
+    """
+    get_matrix transforms a generic vector function into a matrix by
+    applying unit basis vectors to the function.
+
+    :param func: user defined func
+    :return:
+    """
+
+    # Infer the number of input arguments
+    input_dim = func.__code__.co_argcount
+
+    # Build unit basis vectors
+    unit_basis_vectors = []
+    for i in range(0, input_dim):
+        unit_basis_vectors.append(new_unit_basis_vector(input_dim, i))
+
+    transformed_unit_basis_vectors = []
+    for v in unit_basis_vectors:
+        # Call the vector function with the unit basis vectors
+        output_vector = func(*v.vector_as_list)
+        # We are going to flatten into a 1D list since we are already appending.
+        # TODO: maybe make this cleaner
+        transformed_unit_basis_vectors.append(reduce(lambda x, y: x + y, output_vector))
+
+    return Matrix(transformed_unit_basis_vectors)
 
 
 def dot(v: Matrix, u: Matrix) -> int:
@@ -272,4 +316,3 @@ def dot(v: Matrix, u: Matrix) -> int:
     for v_element, u_element in zip(v, u):
         total_sum += v_element * u_element
     return total_sum
-

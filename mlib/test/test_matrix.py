@@ -1,6 +1,4 @@
 # 3rd party
-import math
-
 import pytest
 
 # lib
@@ -43,6 +41,27 @@ class TestMatrix:
         , [1,2]
     ]
 
+    def test_matrix_from_vector_func(self):
+        def vector_func(x_0: int, x_1: int, x_2: int) -> [[]]:
+            return [
+                  [x_0 + 1]
+                , [x_1 + 1]
+                , [x_2 + 1]
+            ]
+
+        A = matrix.matrix_from_vector_func(vector_func)
+        assert A.matrix[0][0] == 2
+        assert A.matrix[1][0] == 1
+        assert A.matrix[2][0] == 1
+
+        assert A.matrix[0][1] == 1
+        assert A.matrix[1][1] == 2
+        assert A.matrix[2][1] == 1
+
+        assert A.matrix[0][2] == 1
+        assert A.matrix[1][2] == 1
+        assert A.matrix[2][2] == 2
+
     def test_vector_matrix_multiplication(self):
         A = matrix.Matrix(self.reflection_matrix)
         v = matrix.Matrix(self.column_vector_3)
@@ -55,12 +74,23 @@ class TestMatrix:
         m = matrix.Matrix(self.reflection_matrix)
         assert m.is_matrix is True
 
+    def test_build_unit_basis_vectors(self):
+        e_0 = matrix.new_unit_basis_vector(2, 0)
+        assert e_0.matrix[0][0] == 1
+        assert e_0.matrix[1][0] == 0
+
+        e_2 = matrix.new_unit_basis_vector(3, 2)
+        assert e_2.matrix[0][0] == 0
+        assert e_2.matrix[1][0] == 0
+        assert e_2.matrix[2][0] == 1
+
     def test_build_identity_matrix(self):
-        I = matrix.build_identity_matrix(2)
-        I.matrix[0][0] = 1
-        I.matrix[0][1] = 0
-        I.matrix[1][0] = 0
-        I.matrix[0][1] = 1
+        I = matrix.new_identity_matrix(2)
+        assert I.matrix[0][0] == 1
+        assert I.matrix[1][0] == 0
+
+        assert I.matrix[0][1] == 0
+        assert I.matrix[1][1] == 1
 
     def test_linear_combination(self):
         v = matrix.Matrix(self.column_vector)
