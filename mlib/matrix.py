@@ -12,35 +12,6 @@ class Matrix:
         self.is_column_vector = True if self.dim['column_size'] == 1 else False
         self.is_row_vector = True if self.dim['row_size'] == 1 else False
         self.is_matrix = True if not self.is_column_vector and not self.is_row_vector else False
-        self.vector = self._get_vector() if self.is_column_vector or self.is_row_vector else None
-
-    def transpose(self):
-        """
-        :return: a new instance of Matrix
-        """
-        if not self.is_column_vector and not self.is_row_vector:
-            raise Exception('Matrix must be a column or row vector to transpose...')
-
-        if self.is_column_vector:
-            return self._new_row_vector(self.vector)
-
-        elif self.is_row_vector:
-            return self._new_column_vector(self.vector)
-
-        else:
-            raise Exception('Can only transpose 1xN matrix or Nx1 ')
-
-    @property
-    def length(self) -> float:
-        # TODO: add tests for this
-        if self.is_matrix:
-            logging.error('Can only compute length for vectors...')
-            return None
-
-        total_sum = 0
-        for element in self.vector:
-            total_sum += math.sqrt(element**2)
-        return total_sum
 
     def _dimension(self) -> Dict:
         """
@@ -57,7 +28,26 @@ class Matrix:
 
         return {'row_size': row_size, 'column_size': column_size}
 
-    def _get_vector(self) -> List:
+    def _new_vector(self, vector: List):
+        if self.is_column_vector:
+            return new_column_vector(vector)
+        elif self.is_row_vector:
+            return new_row_vector(vector)
+
+    @property
+    def length(self) -> float:
+        # TODO: add tests for this
+        if self.is_matrix:
+            logging.error('Can only compute length for vectors...')
+            return None
+
+        total_sum = 0
+        for element in self.vector_as_list:
+            total_sum += math.sqrt(element**2)
+        return total_sum
+
+    @property
+    def vector_as_list(self) -> List:
         """
         when matrix dimension is 1xN or Nx1, aka a (vector) then just use a list as representation, since it is
         easier to work with.
@@ -66,31 +56,31 @@ class Matrix:
             return [row[0] for row in self.matrix]
         elif self.is_row_vector:
             return [column for column in self.matrix[0]]
+        else:
+            return None
 
-    def _new_vector(self, vector: List):
+    def transpose(self):
+        """
+        :return: a new instance of Matrix
+        """
+        if not self.is_column_vector and not self.is_row_vector:
+            raise Exception('Matrix must be a column or row vector to transpose...')
+
         if self.is_column_vector:
-            return self._new_column_vector(vector)
+            return new_row_vector(self.vector_as_list)
+
         elif self.is_row_vector:
-            return self._new_row_vector(vector)
+            return new_column_vector(self.vector_as_list)
 
-    @staticmethod
-    def _new_column_vector(c_vector: List):
-        new_matrix = []
-        for column in c_vector:
-            new_matrix.append([column])
-        return Matrix(new_matrix)
-
-    @staticmethod
-    def _new_row_vector(r_vector: List):
-        new_matrix = [[row for row in r_vector]]
-        return Matrix(new_matrix)
+        else:
+            raise Exception('Can only transpose 1xN matrix or Nx1 ')
 
     def __add__(self, other):
         # TODO: refactor this, add tests
         if self.is_column_vector:
             if other.is_column_vector:
                 new_vector = []
-                for (a, b) in zip(self.vector, other):
+                for (a, b) in zip(self.vector_as_list, other):
                     new_vector.append(a + b)
                 return self._new_vector(new_vector)
             elif other.is_row_vector:
@@ -101,7 +91,7 @@ class Matrix:
         elif self.is_row_vector:
             if other.is_row_vector:
                 new_vector = []
-                for (a, b) in zip(self.vector, other):
+                for (a, b) in zip(self.vector_as_list, other):
                     new_vector.append(a + b)
                 return self._new_vector(new_vector)
             elif other.is_column_vector:
@@ -114,7 +104,7 @@ class Matrix:
         if self.is_column_vector:
             if other.is_column_vector:
                 new_vector = []
-                for (a, b) in zip(self.vector, other):
+                for (a, b) in zip(self.vector_as_list, other):
                     new_vector.append(a - b)
                 return self._new_vector(new_vector)
             elif other.is_row_vector:
@@ -125,7 +115,7 @@ class Matrix:
         elif self.is_row_vector:
             if other.is_row_vector:
                 new_vector = []
-                for (a, b) in zip(self.vector, other):
+                for (a, b) in zip(self.vector_as_list, other):
                     new_vector.append(a - b)
                 return self._new_vector(new_vector)
         elif other.is_column_vector:
@@ -163,14 +153,14 @@ class Matrix:
             new_vector = []
             for i, rows in enumerate(self.matrix):
                 total_sum = 0
-                for column, scalar in zip(rows, other.vector):
+                for column, scalar in zip(rows, other.vector_as_list):
                     total_sum += scalar * column
                 new_vector.append(total_sum)
-            return self._new_column_vector(new_vector)
+            return new_column_vector(new_vector)
 
     def __rmul__(self, other):
         if self.is_column_vector or self.is_row_vector:
-            new_vector = [element * other for element in self.vector]
+            new_vector = [element * other for element in self.vector_as_list]
             return self._new_vector(new_vector)
 
     def __repr__(self) -> str:
@@ -221,7 +211,29 @@ class Matrix:
                 yield column
 
 
-def build_identity_matrix(dim: int) -> [[]]:
+def new_row_vector(r_vector: List):
+    """
+    Helper method to transform a 1D list into 2D matrix object
+    :param r_vector: row vector to transform
+    :return:
+    """
+    new_matrix = [[row for row in r_vector]]
+    return Matrix(new_matrix)
+
+
+def new_column_vector(c_vector: List):
+    """
+    Helper method to transform a 1D list into 2D matrix object
+    :param c_vector: column vector to transform
+    :return:
+    """
+    new_matrix = []
+    for column in c_vector:
+        new_matrix.append([column])
+    return Matrix(new_matrix)
+
+
+def build_identity_matrix(dim: int) -> Matrix:
     """
     :param dim: size of matrix -> dim x dim -> ie: 2 = 2 x 2. Minimum dimension is 2
     :return: identity matrix
@@ -240,6 +252,7 @@ def build_identity_matrix(dim: int) -> [[]]:
 
 def dot(v: Matrix, u: Matrix) -> int:
     """
+    #TODO: add tests
     :param v: a row or column vector
     :param u: n must be a column vector
     :return: the dot product
@@ -248,7 +261,7 @@ def dot(v: Matrix, u: Matrix) -> int:
     if not u.is_column_vector:
         raise Exception('n is not a column vector...')
 
-    if v.vector is None and u.vector is None:
+    if v.vector_as_list is None and u.vector_as_list is None:
         raise Exception('m and n are not vectors...')
 
     if v.is_column_vector:
