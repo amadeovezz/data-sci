@@ -16,7 +16,6 @@ class Matrix:
 
     def _dimension(self) -> Dict:
         """
-         :param matrix: represented as a nested list
          :return: a dictionary that contains the keys 'row_size' and 'column_size'
         """
         row_size = len(self.matrix)
@@ -251,6 +250,45 @@ def new_identity_matrix(dim: int) -> Matrix:
     return Matrix(identity)
 
 
+def append_column_vector(v: Matrix, u: Matrix) -> Matrix:
+    """
+    Appends a column vector u to a given matrix v.
+    v can be an entire matrix or a column vector.
+    #TODO: make it so that we can pass in n number of columns vectors instead of re-sizing each time
+    :param v:
+    :param u:
+    :return:
+    """
+    assert u.is_column_vector
+
+    v_row_dim = v.dim['row_size']
+    v_column_dim = v.dim['column_size']
+    u_row_dim = u.dim['row_size']
+
+    if v_row_dim != u_row_dim:
+        raise Exception('u must have the same row dim as v...')
+
+    # Create new matrix, with same row dim but one more column
+    new_matrix = [[0] * (v_column_dim + 1) for _ in range(0, v_row_dim)]
+
+    # Re-populate original matrix
+    if v.is_column_vector:
+        # __iter__ is defined on column and row vectors
+        for i, component in enumerate(v):
+            new_matrix[i][0] = component
+    else:
+        for i, row in enumerate(v.matrix):
+            for j, component in enumerate(row):
+                new_matrix[i][j] = component
+
+    # Assign new column vector
+    for i, row in enumerate(new_matrix):
+        # v_column_dim is the last column (index starts at zero, otherwise it would v_column_dim + 1)
+        new_matrix[i][v_column_dim] = u.matrix[i][0]
+
+    return Matrix(new_matrix)
+
+
 def new_unit_basis_vector(dim: int, unit_index: int) -> Matrix:
     """
     :param dim: size of the basis vector.
@@ -283,15 +321,21 @@ def matrix_from_vector_func(func) -> Matrix:
     for i in range(0, input_dim):
         unit_basis_vectors.append(new_unit_basis_vector(input_dim, i))
 
-    transformed_unit_basis_vectors = []
-    for v in unit_basis_vectors:
-        # Call the vector function with each component of the unit basis vectors as input
-        output_vector = func(*v.vector_as_list)
-        # We are going to flatten into a 1D list since we are already appending
-        # TODO: maybe make this cleaner
-        transformed_unit_basis_vectors.append(reduce(lambda x, y: x + y, output_vector))
+    # append_column_vector requires the first param to be a matrix
+    # so we must create/declare the matrix outside the loop here and run the first transformation
+    # TODO: refactor this
+    output_vector = new_column_vector(func(*unit_basis_vectors[0].vector_as_list))
+    # Flatten since new_column_vector expects a 1D list
+    transformed_unit_basis_vectors = new_column_vector(reduce(lambda x, y: x + y, output_vector))
 
-    return Matrix(transformed_unit_basis_vectors)
+    # Call the vector function with each component of the unit basis vectors as input (except first basis vector)
+    for i in range(1, len(unit_basis_vectors)):
+        output_vector = func(*unit_basis_vectors[i].vector_as_list)
+        # Flatten since new_column_vector expects a 1D list
+        flattened_output_vector = new_column_vector(reduce(lambda x, y: x + y, output_vector))
+        transformed_unit_basis_vectors = append_column_vector(transformed_unit_basis_vectors, flattened_output_vector)
+
+    return transformed_unit_basis_vectors
 
 
 def dot(v: Matrix, u: Matrix) -> int:
@@ -303,13 +347,13 @@ def dot(v: Matrix, u: Matrix) -> int:
     """
 
     if not u.is_column_vector:
-        raise Exception('n is not a column vector...')
+        raise Exception('u is not a column vector...')
 
     if v.vector_as_list is None and u.vector_as_list is None:
-        raise Exception('m and n are not vectors...')
+        raise Exception('v and u are not vectors...')
 
     if v.is_column_vector:
-        logging.info('m is a column vector, transposing...')
+        logging.info('v is a column vector, transposing...')
         v = v.transpose()
 
     total_sum = 0

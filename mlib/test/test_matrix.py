@@ -31,6 +31,12 @@ class TestMatrix:
         [0,8,2]
     ]
 
+    matrix_3_by_2 = [
+        [1, 2],
+        [1, 2],
+        [1, 2],
+    ]
+
     reflection_matrix = [
         [0, 1],
         [1, 0],
@@ -40,6 +46,35 @@ class TestMatrix:
         [1,2,3]
         , [1,2]
     ]
+
+    def test_append_column_vector(self):
+        v = matrix.Matrix(self.column_vector)
+        u = matrix.Matrix(self.column_vector_2)
+        t = matrix.append_column_vector(v, u)
+
+        assert t.matrix[0][0] == 1
+        assert t.matrix[1][0] == 2
+        assert t.matrix[2][0] == 3
+
+        assert t.matrix[0][1] == 2
+        assert t.matrix[1][1] == 4
+        assert t.matrix[2][1] == 6
+
+        A = matrix.Matrix(self.matrix_3_by_2)
+        B = matrix.append_column_vector(A, v)
+
+        assert B.matrix[0][0] == 1
+        assert B.matrix[1][0] == 1
+        assert B.matrix[2][0] == 1
+
+        assert B.matrix[0][1] == 2
+        assert B.matrix[1][1] == 2
+        assert B.matrix[2][1] == 2
+
+        assert B.matrix[0][2] == 1
+        assert B.matrix[1][2] == 2
+        assert B.matrix[2][2] == 3
+
 
     def test_matrix_from_vector_func(self):
         def vector_func(x_0: int, x_1: int, x_2: int) -> [[]]:
