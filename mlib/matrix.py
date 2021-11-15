@@ -212,7 +212,7 @@ class Matrix:
                 yield column
 
 
-def new_row_vector(r_vector: List):
+def new_row_vector(r_vector: List) -> Matrix:
     """
     Helper method to transform a 1D list into 2D matrix object
     :param r_vector: row vector to transform
@@ -222,7 +222,7 @@ def new_row_vector(r_vector: List):
     return Matrix(new_matrix)
 
 
-def new_column_vector(c_vector: List):
+def new_column_vector(c_vector: List) -> Matrix:
     """
     Helper method to transform a 1D list into 2D matrix object
     :param c_vector: column vector to transform
