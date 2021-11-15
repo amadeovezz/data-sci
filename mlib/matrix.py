@@ -324,7 +324,7 @@ def matrix_from_vector_func(func) -> Matrix:
     # append_column_vector requires the first param to be a matrix
     # so we must create/declare the matrix outside the loop here and run the first transformation
     # TODO: refactor this
-    output_vector = new_column_vector(func(*unit_basis_vectors[0].vector_as_list))
+    output_vector = func(*unit_basis_vectors[0].vector_as_list)
     # Flatten since new_column_vector expects a 1D list
     transformed_unit_basis_vectors = new_column_vector(reduce(lambda x, y: x + y, output_vector))
 
