@@ -285,9 +285,9 @@ def matrix_from_vector_func(func) -> Matrix:
 
     transformed_unit_basis_vectors = []
     for v in unit_basis_vectors:
-        # Call the vector function with the unit basis vectors
+        # Call the vector function with each component of the unit basis vectors as input
         output_vector = func(*v.vector_as_list)
-        # We are going to flatten into a 1D list since we are already appending.
+        # We are going to flatten into a 1D list since we are already appending
         # TODO: maybe make this cleaner
         transformed_unit_basis_vectors.append(reduce(lambda x, y: x + y, output_vector))
 
