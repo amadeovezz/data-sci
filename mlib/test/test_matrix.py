@@ -48,9 +48,9 @@ class TestMatrix:
     ]
 
     def test_append_column_vector(self):
-        v = matrix.Matrix(self.column_vector)
-        u = matrix.Matrix(self.column_vector_2)
-        t = matrix.append_column_vector(v, u)
+        u = matrix.Matrix(self.column_vector)
+        v = matrix.Matrix(self.column_vector_2)
+        t = matrix.append_column_vector(u, v)
 
         assert t.matrix[0][0] == 1
         assert t.matrix[1][0] == 2
@@ -61,7 +61,7 @@ class TestMatrix:
         assert t.matrix[2][1] == 6
 
         A = matrix.Matrix(self.matrix_3_by_2)
-        B = matrix.append_column_vector(A, v)
+        B = matrix.append_column_vector(A, u)
 
         assert B.matrix[0][0] == 1
         assert B.matrix[1][0] == 1
@@ -99,15 +99,15 @@ class TestMatrix:
 
     def test_vector_matrix_multiplication(self):
         A = matrix.Matrix(self.reflection_matrix)
-        v = matrix.Matrix(self.column_vector_3)
-        u = A * v
+        u = matrix.Matrix(self.column_vector_3)
+        v = A * u
 
-        assert u.matrix[0][0] == 4
-        assert u.matrix[1][0] == 2
+        assert v.matrix[0][0] == 4
+        assert v.matrix[1][0] == 2
 
     def test_is_matrix(self):
-        m = matrix.Matrix(self.reflection_matrix)
-        assert m.is_matrix is True
+        A = matrix.Matrix(self.reflection_matrix)
+        assert A.is_matrix is True
 
     def test_build_unit_basis_vectors(self):
         e_0 = matrix.new_unit_basis_vector(2, 0)
@@ -128,9 +128,9 @@ class TestMatrix:
         assert I.matrix[1][1] == 1
 
     def test_linear_combination(self):
-        v = matrix.Matrix(self.column_vector)
-        u = matrix.Matrix(self.column_vector_2)
-        t = 3 * v + u
+        u = matrix.Matrix(self.column_vector)
+        v = matrix.Matrix(self.column_vector_2)
+        t = 3 * u + v
 
         assert t.matrix[0][0] == 5
         assert t.matrix[1][0] == 10
@@ -146,72 +146,74 @@ class TestMatrix:
         assert t.matrix[0][2] == 5
 
     def test_column_vector_add(self):
-        v = matrix.Matrix(self.column_vector)
-        u = matrix.Matrix(self.column_vector_2)
-        t = v + u
+        u = matrix.Matrix(self.column_vector)
+        v = matrix.Matrix(self.column_vector_2)
+        t = u + v
 
         assert t.matrix[0][0] == 3
         assert t.matrix[1][0] == 6
         assert t.matrix[2][0] == 9
 
     def test_column_vector_scaling(self):
-        v = matrix.Matrix(self.column_vector)
-        u = 3 * v
-        assert u.matrix[0][0] == 3
-        assert u.matrix[1][0] == 6
-        assert u.matrix[2][0] == 9
+        u = matrix.Matrix(self.column_vector)
+        v = 3 * u
+
+        assert v.matrix[0][0] == 3
+        assert v.matrix[1][0] == 6
+        assert v.matrix[2][0] == 9
 
     def test_row_vector_scaling(self):
-        v = matrix.Matrix(self.row_vector)
-        u = 3 * v
-        assert u.matrix[0][0] == 3
-        assert u.matrix[0][1] == 6
-        assert u.matrix[0][2] == 9
+        u = matrix.Matrix(self.row_vector)
+        v = 3 * u
+
+        assert v.matrix[0][0] == 3
+        assert v.matrix[0][1] == 6
+        assert v.matrix[0][2] == 9
 
     def test_row_vector_iteration(self):
-        v = matrix.Matrix(self.row_vector)
-        for element in v:
+        u = matrix.Matrix(self.row_vector)
+        for element in u:
             assert type(element) == int
 
     def test_column_vector_iteration(self):
-        v = matrix.Matrix(self.column_vector)
-        for element in v:
+        u = matrix.Matrix(self.column_vector)
+        for element in u:
             assert type(element) == int
 
     def test_transpose_row_vector_to_column(self):
-        v = matrix.Matrix(self.column_vector)
-        u = v.transpose()
-        assert u.is_row_vector is True
-        assert u.matrix[0][0] == 1
-        assert u.matrix[0][1] == 2
-        assert u.matrix[0][2] == 3
+        u = matrix.Matrix(self.column_vector)
+        v = u.transpose()
+        assert v.is_row_vector is True
+        assert v.matrix[0][0] == 1
+        assert v.matrix[0][1] == 2
+        assert v.matrix[0][2] == 3
 
     def test_transpose_column_vector_to_row(self):
-        v = matrix.Matrix(self.row_vector)
-        u = v.transpose()
-        assert u.is_column_vector is True
-        assert u.matrix[0][0] == 1
-        assert u.matrix[1][0] == 2
-        assert u.matrix[2][0] == 3
+        u = matrix.Matrix(self.row_vector)
+        v = u.transpose()
+        assert v.is_column_vector is True
+        assert v.matrix[0][0] == 1
+        assert v.matrix[1][0] == 2
+        assert v.matrix[2][0] == 3
 
     def test_malformed_matrix(self):
         with pytest.raises(Exception):
             matrix.Matrix(self.malformed_matrix)
 
     def test_column_vector_dimension(self):
-        v = matrix.Matrix(self.column_vector)
-        assert v.dim['row_size'] == 3
-        assert v.dim['column_size'] == 1
+        u = matrix.Matrix(self.column_vector)
+        assert u.dim['row_size'] == 3
+        assert u.dim['column_size'] == 1
 
     def test_row_vector_dimension(self):
-        v = matrix.Matrix(self.row_vector)
-        assert v.dim['row_size'] == 1
-        assert v.dim['column_size'] == 3
+        u = matrix.Matrix(self.row_vector)
+        assert u.dim['row_size'] == 1
+        assert u.dim['column_size'] == 3
 
     def test_is_column_vector_matrix(self):
-        v = matrix.Matrix(self.column_vector)
-        assert v.is_column_vector is True
+        u = matrix.Matrix(self.column_vector)
+        assert u.is_column_vector is True
 
     def test_is_row_vector_matrix(self):
-        v = matrix.Matrix(self.row_vector)
-        assert v.is_row_vector is True
+        u = matrix.Matrix(self.row_vector)
+        assert u.is_row_vector is True

@@ -29,41 +29,41 @@ column_vector_2 = [
 ]
 
 # Create
-v = matrix.Matrix(column_vector)
-u = matrix.Matrix(column_vector_2)
+u = matrix.Matrix(column_vector)
+v = matrix.Matrix(column_vector_2)
 
 # Dimension
-v.dimension
+u.dimension
 
 # Transpose to row vector
-v.transpose()
+u.transpose()
 
 # Iterate
-for component in v:
+for component in u:
     print(component)
 
 # Sum 
-v + u 
+u + v 
 
 # Subtract
-v + (-1 * u)
-v - u 
+u + (-1 * v)
+u - v 
 
 # Scale
-3 * v 
+3 * u 
 
 # Linear combinations
-3 * v + u 
+3 * u + v 
 
 # TODO: implement this 
-v.linear_combination
+u.linear_combination
 
 
 # Length
-v.length
+u.length
 
 # Dot product
-matrix.dot(v, u)
+matrix.dot(u, v)
 
 # Note: equivalent operations available on row vectors
 
@@ -91,8 +91,8 @@ A = matrix.Matrix(reflection_matrix)
 A.dimension
 
 # Multiply
-v = matrix.Matrix(column_vector)
-u = A * v
+u = matrix.Matrix(column_vector)
+u = A * u
 
 # Create matrix from vector func
 def vector_func(x_0, x_1, x_2) -> [[]]:

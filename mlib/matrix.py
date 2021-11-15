@@ -250,41 +250,41 @@ def new_identity_matrix(dim: int) -> Matrix:
     return Matrix(identity)
 
 
-def append_column_vector(v: Matrix, u: Matrix) -> Matrix:
+def append_column_vector(target_matrix: Matrix, appending_matrix: Matrix) -> Matrix:
     """
-    Appends a column vector u to a given matrix v.
-    v can be an entire matrix or a column vector.
+    Appends a column vector to a given matrix.
+
     #TODO: make it so that we can pass in n number of columns vectors instead of re-sizing each time
-    :param v:
-    :param u:
+    :param target_matrix:
+    :param appending_matrix:
     :return:
     """
-    assert u.is_column_vector
+    assert appending_matrix.is_column_vector
 
-    v_row_dim = v.dim['row_size']
-    v_column_dim = v.dim['column_size']
-    u_row_dim = u.dim['row_size']
+    target_matrix_row_size = target_matrix.dim['row_size']
+    target_matrix_column_size = target_matrix.dim['column_size']
+    appending_matrix_row_size = appending_matrix.dim['row_size']
 
-    if v_row_dim != u_row_dim:
+    if target_matrix_row_size != appending_matrix_row_size:
         raise Exception('u must have the same row dim as v...')
 
     # Create new matrix, with same row dim but one more column
-    new_matrix = [[0] * (v_column_dim + 1) for _ in range(0, v_row_dim)]
+    new_matrix = [[0] * (target_matrix_column_size + 1) for _ in range(0, target_matrix_row_size)]
 
     # Re-populate original matrix
-    if v.is_column_vector:
+    if target_matrix.is_column_vector:
         # __iter__ is defined on column and row vectors
-        for i, component in enumerate(v):
+        for i, component in enumerate(target_matrix):
             new_matrix[i][0] = component
     else:
-        for i, row in enumerate(v.matrix):
+        for i, row in enumerate(target_matrix.matrix):
             for j, component in enumerate(row):
                 new_matrix[i][j] = component
 
     # Assign new column vector
     for i, row in enumerate(new_matrix):
         # v_column_dim is the last column (index starts at zero, otherwise it would v_column_dim + 1)
-        new_matrix[i][v_column_dim] = u.matrix[i][0]
+        new_matrix[i][target_matrix_column_size] = appending_matrix.matrix[i][0]
 
     return Matrix(new_matrix)
 
@@ -338,25 +338,25 @@ def matrix_from_vector_func(func) -> Matrix:
     return transformed_unit_basis_vectors
 
 
-def dot(v: Matrix, u: Matrix) -> int:
+def dot(u: Matrix, v: Matrix) -> int:
     """
     #TODO: add tests
-    :param v: a row or column vector
-    :param u: n must be a column vector
+    :param u: a row or column vector
+    :param v: n must be a column vector
     :return: the dot product
     """
 
-    if not u.is_column_vector:
+    if not v.is_column_vector:
         raise Exception('u is not a column vector...')
 
-    if v.vector_as_list is None and u.vector_as_list is None:
+    if u.vector_as_list is None and v.vector_as_list is None:
         raise Exception('v and u are not vectors...')
 
-    if v.is_column_vector:
+    if u.is_column_vector:
         logging.info('v is a column vector, transposing...')
-        v = v.transpose()
+        u = u.transpose()
 
     total_sum = 0
-    for v_element, u_element in zip(v, u):
+    for v_element, u_element in zip(u, v):
         total_sum += v_element * u_element
     return total_sum
