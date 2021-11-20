@@ -75,14 +75,28 @@ class Matrix:
         else:
             raise Exception('Can only transpose 1xN matrix or Nx1 ')
 
+    def _vectors_op(self, operator: str, operand_left: List, operand_right: List):
+        """
+
+        helper method for adding vectors and subtracting them
+        :param operator:  'sum' or 'sub'
+        :param operand_left:
+        :param operand_right:
+        :return:
+        """
+        new_vector = []
+        for (a, b) in zip(operand_left, operand_right):
+            if operator == 'sum':
+                new_vector.append(a + b)
+            elif operator == 'sub':
+                new_vector.append(a - b)
+
+        return self._new_vector(new_vector)
+
     def __add__(self, other):
-        # TODO: refactor this, add tests
         if self.is_column_vector:
             if other.is_column_vector:
-                new_vector = []
-                for (a, b) in zip(self.vector_as_list, other):
-                    new_vector.append(a + b)
-                return self._new_vector(new_vector)
+                return self._vectors_op('sum', self.vector_as_list, other)
             elif other.is_row_vector:
                 return Exception('Vector shapes are incompatible... Please use transpose()...')
             else:
@@ -90,23 +104,16 @@ class Matrix:
 
         elif self.is_row_vector:
             if other.is_row_vector:
-                new_vector = []
-                for (a, b) in zip(self.vector_as_list, other):
-                    new_vector.append(a + b)
-                return self._new_vector(new_vector)
+                return self._vectors_op('sum', self.vector_as_list, other)
             elif other.is_column_vector:
                 return Exception('Vector shapes are incompatible... Please use transpose()...')
             else:
                 return Exception('Vector and matrix shapes are incompatible...')
 
     def __sub__(self, other):
-        # TODO: refactor to avoid duplicate code, add tests
         if self.is_column_vector:
             if other.is_column_vector:
-                new_vector = []
-                for (a, b) in zip(self.vector_as_list, other):
-                    new_vector.append(a - b)
-                return self._new_vector(new_vector)
+                return self._vectors_op('sub', self.vector_as_list, other)
             elif other.is_row_vector:
                 return Exception('Vector shapes are incompatible... Please use transpose()...')
             else:
@@ -114,10 +121,7 @@ class Matrix:
 
         elif self.is_row_vector:
             if other.is_row_vector:
-                new_vector = []
-                for (a, b) in zip(self.vector_as_list, other):
-                    new_vector.append(a - b)
-                return self._new_vector(new_vector)
+                return self._vectors_op('sub', self.vector_as_list, other)
         elif other.is_column_vector:
             return Exception('Vector shapes are incompatible... Please use transpose()...')
         else:
