@@ -35,6 +35,13 @@ class Matrix:
             return new_row_vector(vector)
 
     @property
+    def linear_combination(self) -> str:
+        """
+        :return: displays a linear combination of a vector
+        """
+        pass
+
+    @property
     def length(self) -> float:
         # TODO: add tests for this
         if self.is_matrix:
@@ -77,7 +84,6 @@ class Matrix:
 
     def _vectors_op(self, operator: str, operand_left: List, operand_right: List):
         """
-
         helper method for adding vectors and subtracting them
         :param operator:  'sum' or 'sub'
         :param operand_left:

@@ -106,3 +106,13 @@ A = matrix.matrix_from_vector_func(vector_func)
 
 ```
 
+# TODO:
+
+- Create metadata about each vector and matrix (ie, is a unit basis vector, is the matrix an identity matrix, is it a diagonal matrix, etc)
+
+- Explore ways to iterate through matrix?
+    - Expose 1 column at a time (maybe through matrix vector multiplication of unit basis vectors)
+    - New algorithm for
+  
+- Maybe implement everything as a matrix matrix multiplication?
+- Investigate how to implement even scalars as matrices?
