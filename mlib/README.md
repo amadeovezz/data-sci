@@ -6,7 +6,7 @@ mlib (mathlib) is a collection of math based python libraries meant for educatio
 
 ## What is it
 
-An implementation of matrix, vectors and common in python. 
+An implementation of matrix, vectors in python. 
 
 ## API
 
