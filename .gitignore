@@ -5,12 +5,18 @@ __pycache__/
 
 # jetbrains
 .idea/
+etc/
 
 # Distribution / packaging
 lib/
 
 # venv
-bin/
+venv/
 
-# pyenv
-pyvenv.cfg
+# OSX
+.DS_Store
+
+# local notebooks
+mlib/notebooks/
+
+
