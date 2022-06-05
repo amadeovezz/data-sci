@@ -23,7 +23,7 @@ class Classifier:
 
 def perceptron(training_data: pd.DataFrame, t: int) -> {}:
     """
-    An implementation of the perceptron algorithm.
+    An implementation of the perceptron algorithm. Assumes theta is two dimensional.
 
     # TODO: add theta_0, maybe use another data structure besides DataFrames
 
