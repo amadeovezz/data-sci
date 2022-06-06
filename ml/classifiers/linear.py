@@ -8,24 +8,26 @@ import pandas as pd
 
 class Classifier:
     theta = np.array([0, 0])
-    theta_0 = 0
+    offset = 0
 
-    def __init__(self, theta: np.array, theta_0: int=0):
+    def __init__(self, theta: np.array, offset: int=0):
         self.theta = theta
-        self.theta_0 = theta_0  # to implement
+        self.offset = offset
 
     def dot(self, feature: np.array) -> int:
         return self.theta @ feature
 
     def classify(self, feature: np.array, label: int) -> int:
-        return np.sign(self.dot(feature) * label)
+        return np.sign(
+            (self.dot(feature) + self.offset) * label
+        )
 
 
 def perceptron(training_data: pd.DataFrame, t: int) -> {}:
     """
     An implementation of the perceptron algorithm. Assumes theta is two dimensional.
 
-    # TODO: add theta_0, maybe use another data structure besides DataFrames
+    # TODO: maybe use another data structure besides DataFrames
 
     @param training_data: DataFrame a data frame that contains a column named 'features' and a column label
     @param t: int  max number of iterations of training set, an integer
@@ -35,16 +37,21 @@ def perceptron(training_data: pd.DataFrame, t: int) -> {}:
     Usage:
     results = perceptron(df, 4)
     classifier = results['classifier'] # Get classifier
-    print(results) # View summary of algorithm
+    summary = results['summary'] # View summary of algorithm
     """
 
     # Meta-data
-    all_thetas = []
+    theta_progression = []
     total_errors = 0
     iterations_until_convergence = 0
 
-    # local params required for algorithm
+    misclassified_feature_count = {}
+    for _, row in training_data.iterrows():
+        misclassified_feature_count[np.array_str(row.features)] = 0
+
+    # Local params required for algorithm
     theta = np.array([0, 0])
+    offset = 0
 
     for runs in range(1, t):
         logging.info(f'Iteration through training set: {runs} \n')
@@ -60,14 +67,19 @@ def perceptron(training_data: pd.DataFrame, t: int) -> {}:
             )
 
             if theta_dot_feature * row.label <= 0:
-                logging.info(f'Boundary check failed!')
+                # Boundary logic
+                logging.info(f'Feature is misclassified!')
                 theta = theta + (row.label * row.features)
-                all_thetas.append(theta)
-                logging.info(f'Updated theta...\n')
+                offset = offset + row.label
+                logging.info(f'Updated theta and offset...\n')
+                # Algorithm logic
                 errors_during_training_iteration += 1
+                # Meta data
+                theta_progression.append(theta)
                 total_errors += 1
+                misclassified_feature_count[np.array_str(row.features)] += 1
             else:
-                logging.info(f'Boundary check passed!\n')
+                logging.info(f'Feature is classified correctly!\n')
 
         if errors_during_training_iteration == 0:
             iterations_until_convergence = runs
@@ -79,10 +91,13 @@ def perceptron(training_data: pd.DataFrame, t: int) -> {}:
             logging.info(f'-------------------------------------------------\n')
 
     return {
-        'classifier': Classifier(theta),
-        'training_iterations_until_convergence': iterations_until_convergence,
-        'total_errors': total_errors,
-        'thetas': all_thetas
+        'classifier': Classifier(theta, offset),
+        'summary': {
+            'training_iterations_until_convergence': iterations_until_convergence,
+            'total_errors': total_errors,
+            'thetas': theta_progression,
+            'times_features_are_misclassified': misclassified_feature_count
+        }
     }
 
 
