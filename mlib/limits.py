@@ -81,7 +81,7 @@ def epsilon_delta_sqrt(c: float, limit: float, epsilon: float) -> bool:
             # Cast to float to avoid scientific notation
             delta = float(delta * 1 / 2)
     except AssertionError:
-        print('Error! Boundary error!')
+        print('Error! Boundary loss!')
         print(f"x is within: {c - delta} < {c} < {c + delta} ")
         print(f"f(x) is within: {math.sqrt(c - delta)} < {limit} < {math.sqrt(c + delta)}  \n")
         print(f"Limit does not exist")
