@@ -13,8 +13,6 @@ Some other project goals include:
 - Readable code!
 - Tests
 
-Note all 
-
 ## Things to implement
 
 - Supervised 
