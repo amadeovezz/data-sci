@@ -9,7 +9,7 @@ Some other project goals include:
 - Detailed notebook examples
 - Plots!
 - Informative logging 
-- Educational algorithmic meta-data
+- Useful algorithmic meta-data
 - Readable code!
 - Tests
 
@@ -20,13 +20,14 @@ Some other project goals include:
       - [ ] Perceptron
         - [ ] Algorithm 
         - [ ] Tests 
-      - [ ] SVM
+      - [ ] Maximum Margin Classifier
       - [ ] Naive Bayes
-      - [ ] Logistic Regression
+      - [ ] With Kernels
+      - [ ] With Feedforward Neural Nets
     - Regression
       - [ ] Linear
         - [ ] With Kernels
-        - [ ] With Neural Nets
+        - [ ] With Feedforward Neural Nets
       
 - Unsupervised 
   - [ ] K-Means
