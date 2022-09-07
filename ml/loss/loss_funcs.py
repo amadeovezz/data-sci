@@ -12,5 +12,5 @@ def hinge_loss(x: float) -> float:
     return 1 - x
 
 
-def squared_error_loss(x: float) -> float:
-    return x**2/2
+def least_squares(x: float) -> float:
+    return x**2
