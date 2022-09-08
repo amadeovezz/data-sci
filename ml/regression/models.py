@@ -18,9 +18,9 @@ class LinearRegression:
 
         theta_terms = ''
         for i, value in enumerate(self.theta):
-            term = f'+ {value}{theta_values[i]}' if value > 0 else f' - {value}{theta_values[i]}'
+            term = f' + {value}{theta_values[i]} ' if value > 0 else f' - {value}{theta_values[i]}'
             theta_terms += f'{term} '
         return f'y = {self.offset}{theta_terms} '
 
     def predict(self, feature_vector: np.array) -> float:
-        return self.theta.dot(feature_vector) + self.offset
+        return self.theta.dot(feature_vector)[0] + self.offset
