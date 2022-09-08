@@ -1,85 +1,87 @@
-import logging
 import random
-import math
+import logging
+from typing import Callable
 
 import numpy as np
-import pandas as pd
+
+from regression import models, validate
+
 
 def gradient_descent(
         feature_matrix: np.array
         , labels: np.array
-        , step_size: int = .1
+        , derivative: Callable = None
+        , step_size: float = .1
         , maximum_num_steps: int = 100
-        , include_offset: bool = True
-        , offset: int = 0
 ) -> {}:
     """
-    An implementation of the gradient descent algorithm for mean squared error. Assumes theta is two-dimensional.
 
-    @param training_data: a data frame that contains a column named 'features' and a column label
+    An implementation of the gradient descent algorithm for least squares. This implementation only estimates
+    theta
+
+    @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
+    @param labels: the labels associated with the feature matrix (assume y^i is associated with x^i)
+    @param callable: the derivative of theta
     @param step_size:
     @param maximum_num_steps:
-    @param include_offset: run the algorithm without an offset, default is True
-    @param offset: specify a different initialization of offset, default is 0
 
-    @return: a trained model
+    @return: a dictionary with a theta estimated and some additional meta-data
 
+    Usage:
 
-    We have our objective function J which is a surface:
+    results = gradient_descent(training_data, labels, derivative)
+    classifier = results['theta'] # Get theta
+    summary = results['summary'] # View summary of algorithm
 
-    # J(theta_1, theta_1; training data, labels) = sum 1/2 (observed - (theta_1 * x_1 + theta_2 * x_2))^2
-
-    Looking for the argmin of J. We need to find the gradient
+    Or with theta and offset specified:
+    linear.perceptron(training_data, 5, theta=np.array((-3,2), dtype=int), offset=-3)
 
     """
-
-    # Gradients of mean squared error
-    partial_derv_theta_1 = lambda t_1, t_2, x_1, x_2, y: (y - (t_1*x_1 + t_1 * x_2)) * x_1
-    partial_derv_theta_2 = lambda t_1, t_2, x_1, x_2, y: (y - (t_1*x_1 + t_1 * x_2)) * x_2
 
     # Meta-data
     theta_progression = []
-    total_errors = 0
+    total_steps_until_convergence = 0
 
     # Algorithm
-    theta = [0,0]
+    theta = 0
 
     for step_num in range(1, maximum_num_steps):
 
         # Choose random theta to start at
         if step_num == 1:
-            theta[0] = random.randint(1, 100)
-            theta[1] = random.randint(1, 100)
+            theta = random.randint(-100, 100)
 
-        # Compute the gradient at a specific point on our surface
-        gradient_theta_1 = 0
-        gradient_theta_2 = 0
+        # Compute the slope at a specific point on our curve
+        slope = 0
 
-        # We need to sum through our training examples to a specific coordinate:
+        # We need to sum through our training examples at specific coordinate:
+        for i in range(0, len(feature_matrix)):
+            slope += derivative(feature_matrix[i][0], labels[i][0], theta)
 
-        for i, feature_vector in enumerate(feature_matrix):
-            # calculate partial derivative wrt theta_1
-            gradient_theta_1 += partial_derv_theta_1(theta[0], theta[1], feature_vector[0], feature_vector[1], labels[i])
-            # calculate partial derivative wrt theta_2
-            gradient_theta_1 += partial_derv_theta_2(theta[0], theta[1], feature_vector[0], feature_vector[1], labels[i])
+        # This is purely for debugging, adds an enormous runtime to the algorithm
+        if logging.INFO:
+            model = models.LinearRegression(np.array([theta]))
+            avg_loss = validate.avg_loss(model, feature_matrix, labels)
+            logging.info(f'(theta: {theta}, avg_loss: {avg_loss}) - Slope -> {slope}')
 
-        final_gradient = [gradient_theta_1, gradient_theta_2]
-        logging.info(f'Gradient at ({theta[0]}, {theta[1]}): <{gradient_theta_1}, {gradient_theta_2}> ')
-
-        # Update theta, aka move in the direction of the negative gradient
-        theta = theta + (step_size * (-1 * final_gradient))
-        theta_progression = theta_progression.append(theta)
-
-        # Calculate slope via norm
-        slope = math.sqrt(final_gradient[0]**2 + final_gradient[1]**2)
+        # Update theta, aka move in the direction of the negative slope
+        theta += step_size * (-1 * slope)
+        theta_progression.append(theta)
 
         # Decrease step size
-        step_size = 1 / step_num
+        step_size = step_size * 3/4
 
         # Check the slope of theta via norm
         # If slope is small we are close to minimum and stop
-        if slope == 0:
+        if -.001 < slope < .001:
+            total_steps_until_convergence = step_num
             break
 
-    return theta
-
+    return {
+        'model': models.LinearRegression(np.array([theta])),
+        'summary': {
+            'converged': True if total_steps_until_convergence == maximum_num_steps else False,
+            'total_steps_until_convergence': total_steps_until_convergence,
+            'thetas': theta_progression,
+        }
+    }
