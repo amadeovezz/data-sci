@@ -21,7 +21,7 @@ def training_errors(training_data: pd.DataFrame, classifier: models.LinearClassi
 
 
 def average_loss(training_data: pd.DataFrame, theta: np.array,
-                 loss_func: typing.Callable = loss_funcs.hinge_loss) -> int:
+                 loss_func: typing.Callable = loss_funcs.hinge) -> int:
     """
     @param training_data:
     @param theta: a candidate theta as input
