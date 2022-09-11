@@ -2,7 +2,7 @@
 import numpy as np
 
 
-class LinearClassifier:
+class BinaryClassifier:
     # TODO: maybe make an abstract classifier class
     # TODO: assumes theta is 2 dimensional for learning purposes, make it generalize to n
 

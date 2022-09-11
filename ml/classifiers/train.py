@@ -89,7 +89,7 @@ def perceptron(
             logging.info(f'-------------------------------------------------\n')
 
     return {
-        'classifier': models.LinearClassifier(theta, offset),
+        'classifier': models.BinaryClassifier(theta, offset),
         'summary': {
             'iterations_of_training_data': t,
             'converged': False if iterations_until_convergence == 0 else True,

@@ -11,7 +11,7 @@ from classifiers import models
 from loss import loss_funcs
 
 
-def training_errors(training_data: pd.DataFrame, classifier: models.LinearClassifier) -> float:
+def training_errors(training_data: pd.DataFrame, classifier: models.BinaryClassifier) -> float:
     errors = 0
     for i, row in training_data.iterrows():
         if classifier.classify(row.features, row.label) < 0:
@@ -20,24 +20,19 @@ def training_errors(training_data: pd.DataFrame, classifier: models.LinearClassi
     return errors / len(training_data)
 
 
-def average_loss(training_data: pd.DataFrame, theta: np.array,
-                 loss_func: typing.Callable = loss_funcs.hinge) -> int:
+def avg_loss(model: models.BinaryClassifier, feature_matrix: np.array, labels: np.array,
+             loss_func: typing.Callable = loss_funcs.hinge) -> float:
     """
-    @param training_data:
-    @param theta: a candidate theta as input
+    @param model:
+    @param feature_matrix: numpy array that contains features
+    @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
     @param loss_func: loss function used, default is hinge
 
-    @return:
+    @return: average loss given a model
     """
-    total_error = 0
-    for i, row in training_data.iterrows():
-        agreement = (theta @ row.features) * row.label
-        logging.info(f'agreement value: {agreement}')
-        loss_value = loss_func(agreement)
-        logging.info(f'loss value: {loss_value}')
-        total_error += loss_value
+    loss = 0
+    for i in range(0, len(feature_matrix)):
+        value = model.classify(feature_matrix[i], labels[i])
+        loss += loss_func(value)
 
-    avg_loss = total_error / len(training_data)
-    logging.info(f'total loss: {total_error}')
-    logging.info(f'average loss : {avg_loss}')
-    return avg_loss
+    return loss / len(feature_matrix)
