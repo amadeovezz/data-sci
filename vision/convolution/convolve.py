@@ -28,7 +28,6 @@ def convolve(img: np.array, kernel: np.array) -> np.array:
     result_img = np.zeros(idx_img.shape, dtype=float)
 
     # Iterate through each element of the idx_img except start
-    # only iterate through
     for i in range(k, row_num+k):
         for j in range(k, col_num+k):
             # Find the neighbourhood indexes in terms of i,j,k
