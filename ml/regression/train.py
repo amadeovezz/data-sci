@@ -20,21 +20,18 @@ def gradient_descent(
     theta
 
     @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
-    @param labels: the labels associated with the feature matrix (assume y^i is associated with x^i)
+    @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
     @param callable: the derivative of theta
-    @param step_size:
-    @param maximum_num_steps:
+    @param step_size: how much to nudge theta
+    @param maximum_num_steps: max number of steps
 
-    @return: a dictionary with a theta estimated and some additional meta-data
+    @return: a dictionary with a model estimated and some additional meta-data
 
     Usage:
 
     results = gradient_descent(training_data, labels, derivative)
-    classifier = results['theta'] # Get theta
+    model = results['model'] # Get model
     summary = results['summary'] # View summary of algorithm
-
-    Or with theta and offset specified:
-    linear.perceptron(training_data, 5, theta=np.array((-3,2), dtype=int), offset=-3)
 
     """
 
@@ -49,7 +46,7 @@ def gradient_descent(
 
         # Choose random theta to start at
         if step_num == 1:
-            theta = random.randint(-100, 100)
+            theta = random.randint(-10, 10)
 
         # Compute the slope at a specific point on our curve
         slope = 0
@@ -66,6 +63,8 @@ def gradient_descent(
 
         # Update theta, aka move in the direction of the negative slope
         theta += step_size * (-1 * slope)
+
+        # Meta data
         theta_progression.append(theta)
 
         # Decrease step size
@@ -73,12 +72,12 @@ def gradient_descent(
 
         # Check the slope of theta via norm
         # If slope is small we are close to minimum and stop
-        if -.001 < slope < .001:
+        if -.5 < slope < .5:
             total_steps_until_convergence = step_num
             break
 
     return {
-        'model': models.LinearRegression(np.array([theta])),
+        'model': models.LinearRegression(np.array([round(theta,5)])),
         'summary': {
             'converged': True if total_steps_until_convergence == maximum_num_steps else False,
             'total_steps_until_convergence': total_steps_until_convergence,

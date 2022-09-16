@@ -23,4 +23,4 @@ class LinearRegression:
         return f'y = {self.offset}{theta_terms} '
 
     def predict(self, feature_vector: np.array) -> float:
-        return self.theta.dot(feature_vector)[0] + self.offset
+        return self.theta.dot(feature_vector) + self.offset

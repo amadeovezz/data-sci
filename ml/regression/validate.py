@@ -20,20 +20,21 @@ def training_errors(regression: models.LinearRegression, training_data: pd.DataF
     return errors / len(training_data)
 
 
-def avg_loss(model: models.LinearRegression, training_data: np.array, labels: np.array,
+def avg_loss(model: models.LinearRegression, feature_matrix: np.array, labels: np.array,
              loss_func: typing.Callable = loss_funcs.squared_error) -> float:
     """
-    @param training_data:
-    @param regression:  model to test
+    @param model: A linear model
+    @param feature_matrix: numpy array that contains features
+    @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
     @param loss_func: loss function used, default is hinge
 
     @return: average loss given a model
     """
     loss = 0
-    for i in range(0, len(training_data)):
+    for i in range(0, len(feature_matrix)):
         observed_value = labels[i][0]
-        model_value = model.predict(training_data[i][0])
+        model_value = model.predict(feature_matrix[i])
         difference = loss_func(observed_value - model_value)
         loss += difference
 
-    return loss / len(training_data)
+    return loss / len(feature_matrix)
