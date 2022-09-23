@@ -7,7 +7,7 @@ import numpy as np
 from regression import models, validate
 
 
-def gradient_descent(
+def sv_gradient_descent(
         feature_matrix: np.array
         , labels: np.array
         , derivative: Callable = None
@@ -16,8 +16,8 @@ def gradient_descent(
 ) -> {}:
     """
 
-    An implementation of the gradient descent algorithm for least squares. This implementation only estimates
-    theta
+    An implementation of the gradient descent algorithm for a single variable (sv). This implementation only estimates
+    one parameter .
 
     @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
     @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
