@@ -7,7 +7,7 @@ import numpy as np
 from regression import models, validate
 
 
-def sv_gradient_descent(
+def sv_descend(
         feature_matrix: np.array
         , labels: np.array
         , derivative: Callable = None
