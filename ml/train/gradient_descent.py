@@ -1,6 +1,6 @@
 import random
 import logging
-from typing import Callable
+from typing import Callable, Tuple
 
 import numpy as np
 
@@ -11,19 +11,22 @@ def sv_descend(
         feature_matrix: np.array
         , labels: np.array
         , derivative: Callable = None
-        , step_size: float = .1
-        , maximum_num_steps: int = 100
+        , init_theta_range: Tuple = (-100, 100)
+        , learning_rate: float = .01
+        , learning_schedule: Callable = lambda x,y: x
+        , maximum_num_epochs: int = 100
 ) -> {}:
     """
-
     An implementation of the gradient descent algorithm for a single variable (sv). This implementation only estimates
     one parameter .
 
     @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
     @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
-    @param callable: the derivative of theta
-    @param step_size: how much to nudge theta
-    @param maximum_num_steps: max number of steps
+    @param derivaite: the derivative of theta, must be a function of (x,y,theta), where x is a data point, y is an observed value and theta is the parameter
+    @param init_theta_range: An range of values that theta is estimated from.
+    @param learning_rate: proportionality constant for update to theta
+    @param learning_schedule: apply a custom function to the learning rate, must be a function of (learning_rate and epoch)
+    @param maximum_num_epochs: max number of epochs
 
     @return: a dictionary with a model estimated and some additional meta-data
 
@@ -42,11 +45,12 @@ def sv_descend(
     # Algorithm
     theta = 0
 
-    for step_num in range(1, maximum_num_steps):
+    for epoch in range(1, maximum_num_epochs):
 
         # Choose random theta to start at
-        if step_num == 1:
-            theta = random.randint(-10, 10)
+        if epoch == 1:
+            theta = random.randint(init_theta_range[0], init_theta_range[1])
+            theta_progression.append(theta)
 
         # Compute the slope at a specific point on our curve
         slope = 0
@@ -61,25 +65,24 @@ def sv_descend(
             avg_loss = validate.avg_loss(model, feature_matrix, labels)
             logging.info(f'(theta: {theta}, avg_loss: {avg_loss}) - Slope -> {slope}')
 
-        # Update theta, aka move in the direction of the negative slope
-        theta += step_size * (-1 * slope)
+        # Update theta such that loss 'descends'
+        theta += learning_rate * (-1 * slope)
 
         # Meta data
         theta_progression.append(theta)
 
-        # Decrease step size
-        step_size = step_size * 3/4
+        # Apply learning rate schedule
+        learning_rate = learning_schedule(learning_rate, epoch)
 
-        # Check the slope of theta via norm
         # If slope is small we are close to minimum and stop
-        if -.5 < slope < .5:
-            total_steps_until_convergence = step_num
+        if -.0005 < slope < .0005:
+            total_steps_until_convergence = epoch
             break
 
     return {
         'model': models.LinearRegression(np.array([round(theta,5)])),
         'summary': {
-            'converged': True if total_steps_until_convergence == maximum_num_steps else False,
+            'converged': True if total_steps_until_convergence == maximum_num_epochs else False,
             'total_steps_until_convergence': total_steps_until_convergence,
             'thetas': theta_progression,
         }
