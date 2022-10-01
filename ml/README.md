@@ -2,16 +2,10 @@
 
 ## About
 
-The goal of this project is to reinforce foundational ML concepts by building a collection of ML techniques and algorithms.
+The goal of this project is to reinforce foundational ML concepts. This repository has two focus points:
 
-Some other project goals include:
-
-- Detailed notebook examples
-- Plots!
-- Informative logging 
-- Useful algorithmic meta-data
-- Readable code!
-- Tests
+1. Code - lives in `classifiers/`, `loss/`, `regresion/`, `train/` . This is where all the from-scratch algorithms are implemented.
+2. Tutorials - lives in `tutorials/`. A collection of Jupyter notebooks that give a high level overview of ML techniques through a series of 'real-world' problems. Notebooks contain a mixture of text, plots, math (latex), and code.
 
 ## Things to implement
 
@@ -20,28 +14,14 @@ Some other project goals include:
       - [ ] Perceptron
         - [ ] Algorithm 
         - [ ] Tests 
-      - [ ] Maximum Margin Classifier
+      - [ ] Binary
+        - [ ] Vanilla
+        - [ ] With Kernels 
+        - [ ] Feedforward NN
       - [ ] Naive Bayes
-      - [ ] With Kernels
-      - [ ] With Feedforward Neural Nets
     - Regression
       - [ ] Linear
+        - [ ] Vanilla
         - [ ] With Kernels
         - [ ] With Feedforward Neural Nets
-      
-- Unsupervised 
-  - [ ] K-Means
-  - [ ] Mixture Models
-
-- Other
-  - [ ] PCA
-
-
-## How to
-
-### Notebooks
-
-### Tests
-
-### Visualizaton
 
