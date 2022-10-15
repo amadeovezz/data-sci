@@ -24,13 +24,14 @@ def sv_descend(
 
     @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
     @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
-    @param derivative: the derivative of theta, must be a function of (x,y,theta), where x is a data point, y is an observed value and theta is the parameter
+    @param derivative: the derivative of theta, must be a function of (x,y,theta), where x is a data point, y is an
+    observed value and theta is the parameter
     @param init_theta_range: An range of values that the theta is randomly initialized from
     @param learning_rate: proportionality constant for update to theta
     @param learning_schedule: apply a custom function to the learning rate, must be a function of (learning_rate and epoch)
     @param maximum_num_epochs: max number of epochs
     @param stochastic: enable stochastic gradient descent
-    @param mini_batch_number: the number of random features to use for stochatis gradient descent
+    @param mini_batch_number: the number of random features to use for stochastic gradient descent
 
     @return: a dictionary with a model estimated and some additional meta-data
 
@@ -50,8 +51,14 @@ def sv_descend(
     theta = 0
     num_of_features = len(feature_matrix)-1
 
-    for epoch in range(1, maximum_num_epochs):
+    # Shuffle training data and labels in unison
+    if stochastic:
+        stochastic_idx = 0
+        p = np.random.permutation(len(feature_matrix))
+        shuffled_training_data, shuffled_labels = feature_matrix[p], labels[p]
 
+
+    for epoch in range(1, maximum_num_epochs):
         # Choose random theta to start at
         if epoch == 1:
             theta = random.randint(init_theta_range[0], init_theta_range[1])
@@ -59,15 +66,12 @@ def sv_descend(
 
         slope = 0
         if stochastic:
-            idx_of_features = []
-            # Choose one random feature
+            for i in range(stochastic_idx, stochastic_idx + mini_batch_number):
+                slope += derivative(shuffled_training_data[i][0], shuffled_labels[i][0], theta)
             if mini_batch_number == 0:
-                idx_of_features.append(random.randint(0, num_of_features))
+                stochastic_idx += 1
             else:
-                # Choose multiple random features
-                idx_of_features = [random.randint(0, num_of_features) for i in range(0, mini_batch_number)]
-            for i in idx_of_features:
-                slope += derivative(feature_matrix[i][0], labels[i][0], theta)
+                stochastic_idx = stochastic_idx + mini_batch_number
         else:
             # Compute the slope at a specific point on our objective function
             for i in range(0, num_of_features):
