@@ -4,9 +4,8 @@ import numpy as np
 
 class LinearRegression:
     theta: np.array = 0
-    offset: int = 0
 
-    def __init__(self, theta: np.array, offset: int = 0):
+    def __init__(self, theta: np.array, offset: float = 0):
         self.theta = theta
         self.offset = offset
 
@@ -18,7 +17,7 @@ class LinearRegression:
 
         theta_terms = ''
         for i, value in enumerate(self.theta):
-            term = f' + {value}{theta_values[i]} ' if value > 0 else f' - {value}{theta_values[i]}'
+            term = f' + {value}{theta_values[i]} ' if value > 0 else f' {value}{theta_values[i]}'
             theta_terms += f'{term} '
         return f'y = {self.offset}{theta_terms} '
 
