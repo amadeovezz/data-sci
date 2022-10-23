@@ -16,7 +16,7 @@ def sv_descend(
         , learning_schedule: Callable = lambda x, y: x
         , maximum_num_epochs: int = 100
         , stochastic: bool = False
-        , mini_batch_number: int = 0
+        , mini_batch_number: int = 1
 ) -> {}:
     """
     An implementation of the gradient descent algorithm for a single variable (sv). This implementation is intended to
@@ -51,9 +51,13 @@ def sv_descend(
     # Choose random theta to start at
     theta = random.randint(init_theta_range[0], init_theta_range[1])
     theta_progression.append(theta)
-    num_of_features = len(feature_matrix)-1
+    num_of_features = len(feature_matrix)
 
     # Shuffle training data and labels in unison
+    if mini_batch_number >= len(feature_matrix):
+        s = f'Mini batch setting uses all features for loss computation.\n Please configure a value that is' \
+            f'< number of features.'
+        raise Exception(s)
     stochastic_idx = 0
     p = np.random.permutation(len(feature_matrix))
     shuffled_training_data, shuffled_labels = feature_matrix[p], labels[p]
@@ -62,14 +66,16 @@ def sv_descend(
         derivative_sum = 0
         if stochastic:
             for i in range(stochastic_idx, stochastic_idx + mini_batch_number):
+                if i >= num_of_features:
+                    break
                 derivative_sum += derivative(shuffled_training_data[i][0], shuffled_labels[i][0], theta)
-            if mini_batch_number == 0:
-                stochastic_idx += 1
-            else:
-                stochastic_idx = stochastic_idx + mini_batch_number
+
+            stochastic_idx = stochastic_idx + mini_batch_number
+            # Make sure we re-start our index
+            stochastic_idx = stochastic_idx % num_of_features
         else:
             # Compute the slope at a specific point on our objective function
-            for i in range(0, num_of_features):
+            for i in range(0, num_of_features-1):
                 derivative_sum += derivative(feature_matrix[i][0], labels[i][0], theta)
 
         # This is purely for debugging, adds an enormous runtime to the algorithm
@@ -100,6 +106,7 @@ def sv_descend(
             'thetas': theta_progression,
         }
     }
+
 
 def mv_descend(
         feature_matrix: np.array
@@ -146,15 +153,19 @@ def mv_descend(
 
     # Algorithm
     # Choose random parameters to start at
-    r_theta, = random.randint(init_parameter_range[0], init_parameter_range[1])
+    r_theta = random.randint(init_parameter_range[0], init_parameter_range[1])
     r_offset = random.randint(init_parameter_range[0], init_parameter_range[1])
     parameters = np.array([r_theta,r_offset])
     theta_progression.append(parameters)
 
-    num_of_features = len(feature_matrix)-1
+    num_of_features = len(feature_matrix)
     gradient = np.array([0, 0])
 
     # Shuffle training data and labels in unison
+    if mini_batch_number >= len(feature_matrix):
+        s = f'Mini batch setting uses all features for loss computation.\n Please configure a value that is' \
+            f'< number of features.'
+        raise Exception(s)
     stochastic_idx = 0
     p = np.random.permutation(len(feature_matrix))
     shuffled_training_data, shuffled_labels = feature_matrix[p], labels[p]
@@ -166,17 +177,19 @@ def mv_descend(
 
         if stochastic:
             for i in range(stochastic_idx, stochastic_idx + mini_batch_number):
+                if i >= num_of_features:
+                    break
                 sum_partial_theta += derivative_t(
                     shuffled_training_data[i][0], shuffled_labels[i][0], parameters[0], parameters[1])
                 sum_partial_offset += derivative_o(
                     shuffled_training_data[i][0], shuffled_labels[i][0],parameters[0], parameters[1])
-            if mini_batch_number == 0:
-                stochastic_idx += 1
-            else:
-                stochastic_idx = stochastic_idx + mini_batch_number
+
+            stochastic_idx = stochastic_idx + mini_batch_number
+            # Make sure we re-start our index
+            stochastic_idx = stochastic_idx % num_of_features
         else:
             # Compute the slope at a specific point on our objective function
-            for i in range(0, num_of_features):
+            for i in range(0, num_of_features-1):
                 sum_partial_theta += derivative_t(feature_matrix[i][0], labels[i][0], parameters[0], parameters[1])
                 sum_partial_offset += derivative_o(feature_matrix[i][0], labels[i][0],parameters[0], parameters[1])
 
