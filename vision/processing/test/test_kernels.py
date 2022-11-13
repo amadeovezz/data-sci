@@ -2,13 +2,12 @@
 import numpy as np
 
 # lib
-from convolution import kernels
+from kernels import create_kernel
 
 class TestKernels:
 
-
     def test_create_uniform_kernel(self):
-        k = kernels.create_kernel(1)
+        k = create_kernel(1)
         k_rounded = np.round(k, decimals=3)
         expected = np.array([
             [.111, .111, .111]
