@@ -49,7 +49,7 @@ class TestFiltering:
         assert new_img[1,1] == -3.0
 
     def test_filter_uniform_kernel(self):
-        k = create_kernel(1, type='uniform')
+        k = create_kernel('uniform')
         new_img = filter(self.img, k)
         expected = np.array([
               [.667, 1, .667]
