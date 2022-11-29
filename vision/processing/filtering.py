@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def flip_kernel(kernel: np.array) -> np.array:
+def flip_kernel(kernel: np.ndarray) -> np.ndarray:
     """
     Flips a kernel so that it can be used for convolution.
 
@@ -11,7 +11,7 @@ def flip_kernel(kernel: np.array) -> np.array:
     return np.flip(np.flip(kernel, axis=0),1)
 
 
-def filter(img: np.array, kernel: np.array, convolve: bool=False) -> np.array:
+def filter(img: np.ndarray, kernel: np.ndarray, convolve: bool=False) -> np.ndarray:
     """
     @param img: The img to filter.
     @param kernel: The kernel to use on the image.
@@ -33,12 +33,12 @@ def filter(img: np.array, kernel: np.array, convolve: bool=False) -> np.array:
 
     # Create new image for computation so that our kernel can 'move' across edges
     row_num, col_num = img.shape
-    safe_img = np.zeros((row_num+(2*k),col_num+(2*k)), dtype=float)
+    safe_img = np.zeros((row_num+(2*k),col_num+(2*k)), dtype=np.float)
     # Copy old image into new img
     safe_img[k:row_num+k, k:col_num+k] = img
 
     # Create a result image
-    result_img = np.zeros(safe_img.shape, dtype=float)
+    result_img = np.zeros(safe_img.shape, dtype=np.float)
 
     # Iterate through each element of our safe_img - starting at the beginning indexes
     # of our original image
@@ -51,5 +51,4 @@ def filter(img: np.array, kernel: np.array, convolve: bool=False) -> np.array:
             result_img[i,j] = np.multiply(neighbourhood_values, kernel).sum()
 
     return result_img[k:row_num+k, k:col_num+k]
-
 
