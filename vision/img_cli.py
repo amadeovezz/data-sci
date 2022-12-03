@@ -35,17 +35,9 @@ class ImgCli:
         filtered_img = filtering.filter(self.img, kernel, convolve=convolve)
         return self.display(filtered_img)
 
-    def reduce_noise(self, method: str = 'uniform'):
-        k = kernels.create_kernel(method)
+    def smooth(self, method: str = 'uniform', size: int = 1):
+        k = kernels.create_kernel(method, size)
         self.img = filtering.filter(self.img, k)
-
-    def x_edges(self):
-        grad_x = kernels.create_kernel('gradient_x')
-        return filtering.filter(self.img, grad_x)
-
-    def y_edges(self):
-        grad_y = kernels.create_kernel('gradient_y')
-        return filtering.filter(self.img, grad_y)
 
     def gradient_image(self):
         img = self.img

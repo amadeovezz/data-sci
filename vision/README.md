@@ -20,7 +20,7 @@ img.show()
 
 # Reduce noise
 
-img.reduce_noise()
+img.smooth(method='gaussian')
 
 # Gradient image
 
