@@ -18,6 +18,10 @@ img = img_cli.ImgCli("../images/crocodile-1.jpg")
 
 img.show()
 
+# Filter
+
+img.filter(kernel)
+
 # Reduce noise
 
 img.smooth(method='gaussian')
@@ -30,9 +34,13 @@ img.gradient_image()
 
 ```
 
-
-
 The main dependencies used are:
 
 - `numpy`: for computation
 - `pillow`: for reading and displaying images
+
+
+TODO:
+
+- [ ]  Improve edge detection
+- [ ]  Speed up filtering
