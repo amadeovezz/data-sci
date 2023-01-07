@@ -9,4 +9,4 @@ meant for educational purposes.
 
 ## maths
 
-math is a collection of miscellaneous math based libraries (with a focus matrix methods for data-science) meant for education purposes.
+maths is a collection of miscellaneous math based libraries (with a focus matrix methods for data-science) meant for education purposes.

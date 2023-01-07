@@ -7,11 +7,21 @@ from maths.linalg import *
 class TestLigAlg:
 
     def test_projection(self):
+        # Two ways to project a vector a onto a vector b
         a = np.array([1,1,0])
         Projection = proj_matrix(a)
         b = np.array([0,1,1])
-        assert np.all(np.matmul(Projection, b) == np.array([1/2,1/2,0]))
+        # An alternative way to get the projection vector
+        c = (np.dot(b,a) / np.dot(a,a)) * a
+        assert np.all(np.matmul(Projection, b) == c)
 
+    def test_unit_projection(self):
+        a = np.array([1,0])
+        Projection = proj_matrix(a)
+        b = np.array([1,9])
+        # Unit vectors have simpler computation
+        c = np.matmul(np.outer(a,a),b)
+        assert np.all(np.matmul(Projection, b) == c)
 
     def test_orth_projection(self):
         a = np.array([1,1,0])
@@ -54,4 +64,3 @@ class TestLigAlg:
         assert np.dot(q_0, q_1) == 0
         assert np.all(np.round(q_0,3) == np.array([.707, .707]))
         assert np.all(np.round(q_1,3) == np.array([.707, -.707]))
-

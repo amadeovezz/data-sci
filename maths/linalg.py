@@ -6,7 +6,6 @@ def find_inverse(A: np.ndarray) -> Tuple[np.array]:
     pass
 
 
-
 def qr_factorization(A: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     pass
 
@@ -61,6 +60,7 @@ def pseudo_inverse(A: np.ndarray, factorization: str='None') -> Union[float, np.
             return np.matmul(Inv, A.T)
 
 
+
 def proj_matrix(A: np.ndarray) -> np.ndarray:
     """
     Computes a projection matrix that projects any vector b onto the column space of
@@ -68,7 +68,7 @@ def proj_matrix(A: np.ndarray) -> np.ndarray:
 
     In either case the algebra is almost identical.
 
-    Given by: A (A^T A)^-1 A^T  or  a a(a^T a)^-1 a^T
+    Given by: A (A^T A)^-1 A^T  or  a (a^T a)^-1 a^T
 
     @param A: a matrix or a vector
     @return:
@@ -76,8 +76,8 @@ def proj_matrix(A: np.ndarray) -> np.ndarray:
 
     if A.ndim == 1:
         a = A
-        scalar = pseudo_inverse(a)
-        return np.outer(scalar * a, a.T)
+        vec = pseudo_inverse(a)
+        return np.outer(vec, a)
     else:
         Pseudo = pseudo_inverse(A)
         return np.matmul(A, Pseudo)
