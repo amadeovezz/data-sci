@@ -107,7 +107,7 @@ def sv_descend(
         }
     }
 
-
+# WIP
 def mv_descend(
         feature_matrix: np.array
         , labels: np.array
@@ -121,8 +121,9 @@ def mv_descend(
         , mini_batch_number: int = 0
 ) -> {}:
     """
-    An implementation of the gradient descent algorithm for a single variable (sv). This implementation is intended to
-    only estimate the coefficient theta (and not the offset)
+    TODO: extend to > 2 variables.
+
+    An implementation of the gradient descent algorithm multiple variables (mv).
 
     @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
     @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
