@@ -2,12 +2,63 @@ from typing import Tuple, Union
 import numpy as np
 
 
-def find_inverse(A: np.ndarray) -> Tuple[np.array]:
-    pass
-
-
 def qr_factorization(A: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-    pass
+    """
+    TODO: extend for matrices of all sizes
+    TODO: WIP
+
+    Currently only factorizes 3x3 matrices.
+
+    @param A:
+    @return:
+    """
+
+    if np.linalg.det(A) == 0:
+        raise Exception('Columns are not linearly independent')
+
+    # Setup
+    Q = np.zeros((3,3), dtype=float)
+    R = np.zeros((3,3), dtype=float)
+    a_0, a_1, a_2 = A[0,:], A[1,:], A[2,:]
+
+    # span(a_0) = span(c * q_0)
+
+    a_0_norm = np.linalg.norm(a_0)
+    q_0 = a_0 / a_0_norm
+    Q[0,:] = q_0
+    R[0:0] = a_0_norm
+
+    # span(a_0,a_1) = span(c_0 q_0, c_1 q_1)
+
+    direction_of_q_0 = np.dot(a_1, q_0)
+    projection_onto_q_0 = direction_of_q_0 * q_0
+    a_1_perp = a_1 - projection_onto_q_0
+    a_1_p_norm = np.linalg.norm(a_1_perp)
+    q_1 = a_1_perp / a_1_p_norm
+    Q[1,:] = q_1
+
+    R[0:1] = direction_of_q_0
+    R[1:1] = a_1_p_norm
+
+    # span(a_0,a_1,a_2) = span(c_0 q_0, c_1 q_1, c_2 q_2)
+
+    direction_of_q_0 = np.dot(a_2, q_0)
+    projection_onto_q_0 = q_0 * direction_of_q_0
+    direction_of_q_1 = np.dot(a_2, q_1)
+    projection_onto_q_1 = q_1 * direction_of_q_1
+
+    projection_of_a2_onto_plane = projection_onto_q_0 - projection_onto_q_1 # This can also be calculated (QQ^T)?
+    a_2_perp = a_2 - projection_of_a2_onto_plane
+    a_2_perp_norm = np.linalg.norm(a_2_perp)
+    q_2 = a_2_perp / a_2_perp_norm
+    Q[2,:] = q_2
+
+    R[2,0] = direction_of_q_0
+    R[2,1] = direction_of_q_1
+    R[2,2] = a_2_perp_norm
+
+    return (Q,R)
+
 
 
 def gram_schmidt(u: np.array, v: np.array) -> Tuple[np.array, np.array]:

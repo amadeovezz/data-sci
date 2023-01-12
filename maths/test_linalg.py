@@ -64,3 +64,11 @@ class TestLigAlg:
         assert np.dot(q_0, q_1) == 0
         assert np.all(np.round(q_0,3) == np.array([.707, .707]))
         assert np.all(np.round(q_1,3) == np.array([.707, -.707]))
+
+    def test_qr_factorization(self):
+        A = np.array([[1, 2, 3]
+                      ,[2, 1, 1]
+                      ,[3, 1, 4]])
+
+        Q, R = qr_factorization(A)
+        assert np.all(np.matmul(Q,R) == A)
