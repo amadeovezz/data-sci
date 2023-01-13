@@ -3,7 +3,7 @@ import pytest
 import numpy as np
 
 # lib
-from regression import models, validate, train
+from regression import models, evaluate, train
 
 class TestRegression:
 
@@ -24,6 +24,6 @@ class TestRegression:
 
     def test_avg_loss(self):
         m = models.LinearRegression(theta=np.array([2]))
-        actual = validate.avg_loss(m, self.x_features, self.labels)
+        actual = evaluate.training_loss(m, self.x_features, self.labels)
         expected = .5
         assert actual == expected

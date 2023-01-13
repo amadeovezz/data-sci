@@ -12,7 +12,7 @@ import models
 
 
 def perceptron(
-        training_data: pd.DataFrame
+        training_data: pd.DataFrame # TOD0: make this an ndarray
         , t: int
         , theta: np.array = np.array((0, 0), dtype=int)
         , include_offset: bool = True
@@ -21,7 +21,6 @@ def perceptron(
     """
     An implementation of the perceptron algorithm. Assumes theta is two dimensional.
 
-    # TODO: maybe use another data structure besides DataFrames
 
     @param training_data: a data frame that contains a column named 'features' and a column label
     @param t: max number of iterations of training set, an integer

@@ -5,7 +5,7 @@ from typing import Callable, Tuple
 import numpy as np
 from numpy import linalg
 
-from regression import models, validate
+from regression import models, evaluate
 
 def sv_descend(
         feature_matrix: np.array
@@ -13,14 +13,14 @@ def sv_descend(
         , derivative: Callable = None
         , init_theta_range: Tuple = (-100, 100)
         , learning_rate: float = .01
-        , learning_schedule: Callable = lambda x, y: x
+        , learning_schedule: Callable = None
         , maximum_num_epochs: int = 100
         , stochastic: bool = False
         , mini_batch_number: int = 1
 ) -> {}:
     """
     An implementation of the gradient descent algorithm for a single variable (sv). This implementation is intended to
-    only estimate the coefficient theta (and not the offset)
+    only estimate the coefficient theta (and not the offset). Currently only supports 1D features.
 
     @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
     @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
@@ -28,7 +28,8 @@ def sv_descend(
     Is a function of x (data), y (label), theta (parameter).
     @param init_theta_range: An range of values that theta is randomly initialized from
     @param learning_rate: proportionality constant for update to theta
-    @param learning_schedule: apply a custom function to the learning rate, must be a function of (learning_rate and epoch)
+    @param learning_schedule: apply a custom function to the learning rate, must be a function of
+    learning_rate and epoch. Ie: lambda learning_rate, epoch: return learning_rate * epoch
     @param maximum_num_epochs: max number of epochs
     @param stochastic: enable stochastic gradient descent
     @param mini_batch_number: the number of random features to use for stochastic gradient descent
@@ -81,7 +82,7 @@ def sv_descend(
         # This is purely for debugging, adds an enormous runtime to the algorithm
         if logging.DEBUG:
             model = models.LinearRegression(np.array([theta]))
-            avg_loss = validate.avg_loss(model, feature_matrix, labels)
+            avg_loss = evaluate.training_loss(model, feature_matrix, labels)
             logging.debug(f'(theta: {theta}, avg_loss: {avg_loss}) - Slope -> {derivative_sum}')
 
         # Apply learning rate schedule
@@ -107,33 +108,36 @@ def sv_descend(
         }
     }
 
-# WIP
-def mv_descend(
+def tv_descend(
         feature_matrix: np.array
         , labels: np.array
         , derivative_t: Callable = None
         , derivative_o: Callable = None
         , init_parameter_range: Tuple = (-100, 100)
-        , learning_rate: float = .01
-        , learning_schedule: Callable = lambda x, y: x
+        , learning_rate: float = .0001
+        , learning_schedule: Callable = None
         , maximum_num_epochs: int = 100
         , stochastic: bool = False
         , mini_batch_number: int = 0
 ) -> {}:
     """
-    TODO: extend to > 2 variables.
 
-    An implementation of the gradient descent algorithm multiple variables (mv).
+
+    An implementation of the gradient descent algorithm for two variables (tv). Ie: estimating theta and an offset
+    (parameters). Currently only supports 1D features.
 
     @param feature_matrix: numpy array that contains our data (in this case this is a 1x1 matrix)
     @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
+
     @param derivative_t: the partial derivative of theta for a given loss function, where L(theta, offset;Data).
-    Is a function of x (data), y (label), theta (parameter), theta_0 (offset).
+    Is a function of x (data), y (label), theta (parameter), theta_0 (parameter)
     @param derivative_o: the partial derivative of the offset for a given loss function, where L(theta, offset;Data).
-    Is a function of x (data), y (label), theta (parameter), theta_0 (offset).
+    Is a function of x (data), y (label), theta (parameter), theta_0 (parameter).
+
     @param init_parameter_range: An range of values that the theta, and the offset are randomly initialized from
     @param learning_rate: proportionality constant for update to theta
-    @param learning_schedule: apply a custom function to the learning rate, must be a function of (learning_rate and epoch)
+    @param learning_schedule: apply a custom function to the learning rate, must be a function of
+    learning_rate and epoch. Ie: lambda learning_rate, epoch: return learning_rate * epoch
     @param maximum_num_epochs: max number of epochs
     @param stochastic: enable stochastic gradient descent
     @param mini_batch_number: the number of random features to use for stochastic gradient descent
@@ -142,14 +146,14 @@ def mv_descend(
 
     Usage:
 
-    results = gradient_descent(training_data, labels, derivative)
+    results = tv_descend(training_data, labels, derivative)
     model = results['model'] # Get model
     summary = results['summary'] # View summary of algorithm
 
     """
 
     # Meta-data
-    theta_progression = []
+    parameter_progression = []
     total_steps_until_convergence = 0
 
     # Algorithm
@@ -157,10 +161,9 @@ def mv_descend(
     r_theta = random.randint(init_parameter_range[0], init_parameter_range[1])
     r_offset = random.randint(init_parameter_range[0], init_parameter_range[1])
     parameters = np.array([r_theta,r_offset])
-    theta_progression.append(parameters)
+    parameter_progression.append(parameters)
 
     num_of_features = len(feature_matrix)
-    gradient = np.array([0, 0])
 
     # Shuffle training data and labels in unison
     if mini_batch_number >= len(feature_matrix):
@@ -173,7 +176,7 @@ def mv_descend(
 
     for epoch in range(1, maximum_num_epochs):
 
-        np.zeros(gradient)
+        gradient = np.array([0, 0])
         sum_partial_theta, sum_partial_offset = 0, 0
 
         if stochastic:
@@ -196,14 +199,21 @@ def mv_descend(
 
         gradient[0], gradient[1] = sum_partial_theta, sum_partial_offset
 
+        # This is purely for debugging, adds an enormous runtime to the algorithm
+        if logging.DEBUG:
+            model = models.LinearRegression(np.array([round(parameters[0], 5)]), round(parameters[1], 5))
+            avg_loss = evaluate.training_loss(model, feature_matrix, labels)
+            logging.debug(f'(theta: {sum_partial_theta}, theta_0:{sum_partial_offset}  avg_loss: {avg_loss}) - Gradient -> {gradient}')
+
+
         # Apply learning rate schedule
         learning_rate = learning_schedule(learning_rate, epoch)
 
         # Update parameters elementwise such that loss 'descends'
-        np.add(parameters, learning_rate * (-1 * gradient))
+        parameters = np.add(parameters, learning_rate * (-1 * gradient))
 
         # Meta data
-        theta_progression.append(parameters)
+        parameter_progression.append(parameters)
 
         # If norm of gradient is small we are close to minimum and stop
         if -.0005 < linalg.norm(gradient) < .0005:
@@ -215,6 +225,6 @@ def mv_descend(
         'summary': {
             'converged': True if total_steps_until_convergence == maximum_num_epochs else False,
             'total_steps_until_convergence': total_steps_until_convergence,
-            'thetas': theta_progression,
+            'parameters': parameter_progression,
         }
     }
