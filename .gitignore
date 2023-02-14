@@ -17,6 +17,5 @@ venv/
 .DS_Store
 
 # local notebooks
-mlib/notebooks/
-
+maths/tinker
 
