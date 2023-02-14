@@ -7,21 +7,10 @@ The goal of this project is to reinforce foundational ML concepts. This reposito
 1. Code - lives in `classifiers/`, `loss/`, `regresion/`, `train/` . This is where all the from-scratch algorithms are implemented.
 2. Tutorials - lives in `tutorials/`. A collection of Jupyter notebooks that give a high level overview of ML techniques through a series of 'real-world' problems. Notebooks contain a mixture of text, plots, math (latex), and code.
 
-## Things to implement
+## TODOs
 
-- Supervised 
-    - Classification
-      - [ ] Perceptron
-        - [ ] Algorithm 
-        - [ ] Tests 
-      - [ ] Binary
-        - [ ] Vanilla
-        - [ ] With Kernels 
-        - [ ] Feedforward NN
-      - [ ] Naive Bayes
-    - Regression
-      - [ ] Linear
-        - [ ] Vanilla
-        - [ ] With Kernels
-        - [ ] With Feedforward Neural Nets
-
+- Regression
+- [ ] Fix hyper-parameters after refactor
+  - [ ] Perhaps build tool that automatically tunes these
+- [ ] Finish multi parameter descend implementation
+  - [ ] Add math to tutorial 
