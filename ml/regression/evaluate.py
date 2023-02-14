@@ -12,21 +12,25 @@ def squared_error(x: float) -> float:
     return x ** 2
 
 
-def training_loss(model: models.LinearRegression, feature_matrix: np.array, labels: np.array,
+def training_loss(model: models.LinearRegression, feature_matrix: np.ndarray, labels: np.array,
                   loss_func: typing.Callable = squared_error) -> float:
     """
     @param model: A linear model
-    @param feature_matrix: numpy array that contains features - note this just a 1d array. # TODO: make this a ndarray
+    @param feature_matrix: nd array that contains features. Each column represents a feature.
     @param labels: numpy array containing the labels associated with the feature matrix (assume y^i is associated with x^i)
     @param loss_func: loss function used, default is hinge
 
     @return: average loss given a model
     """
     loss = 0
-    for i in range(0, len(feature_matrix)):
-        observed_value = labels[i][0]
-        model_value = model.predict(feature_matrix[i])
+    has_n_features = False if len(feature_matrix.shape) == 1 else True
+    num_of_data_points = len(feature_matrix[0, :]) if has_n_features else len(feature_matrix)
+
+    for i in range(0, num_of_data_points):
+        observed_value = labels[i]
+        data_point = feature_matrix[:, i] if has_n_features else feature_matrix[i]
+        model_value = model.predict(data_point)
         difference = loss_func(observed_value - model_value)
         loss += difference
 
-    return loss / len(feature_matrix)
+    return loss / num_of_data_points
